@@ -5,10 +5,15 @@
 
 typedef struct {
     
-    Texture2D texture;
-    Vector2 position;
+    Vector2 position;   // Position of the player (x, y)
+    Texture2D texture;  // Texture to represent the player
+    Rectangle frameRec; // Sprite frame rectangle
+
+    int last_animation;
     
     float speed;
+    
+
 } Player;
 
 typedef struct EnvItem {

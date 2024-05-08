@@ -13,8 +13,8 @@ Camera2D InitPlayerCamera(Player *player){
 
 void UpdatePlayerCamera(Camera2D *camera, Player *player, float delta, int width, int height)
 {
-    static float minSpeed = 30;
-    static float minEffectLength = 10;
+    float minSpeed = 30 * (float) (camera->zoom * 2);
+    static float minEffectLength = 10; 
     static float fractionSpeed = 0.8f;
 
     int mouseWheel = GetMouseWheelMove();
@@ -22,7 +22,7 @@ void UpdatePlayerCamera(Camera2D *camera, Player *player, float delta, int width
     {
         camera->zoom += ((float)mouseWheel*0.05f);
         if (camera->zoom > 3.0f) camera->zoom = 3.0f;
-        else if (camera->zoom < 0.25f) camera->zoom = 0.25f;
+        else if (camera->zoom < 1.0f) camera->zoom = 1.0f;
     }
 
     camera->offset = (Vector2){ width/2.0f, height/2.0f };
