@@ -16,11 +16,17 @@ typedef struct {
 
 } Player;
 
-typedef struct EnvItem {
+typedef struct {
+    
+    Vector2 position;   // Position of the tile (x, y)
+    Texture2D texture;    
     Rectangle rect;
+    
     int blocking;
-    Color color;
-} EnvItem;
+
+} Tile;
+
+
 
 
 

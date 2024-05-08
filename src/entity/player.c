@@ -6,10 +6,10 @@ static int current_animation = 0;
 Player* InitPlayer(void){
 
     Player* player = (Player*)malloc(sizeof(Player));
-    player->position = (Vector2){SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2};
+    player->position = (Vector2){0, 0};
     player->speed = PLAYER_SPEED;
 
-    player->texture = LoadTexture("src/resources/characters/player.png");
+    player->texture = LoadTexture("resources/characters/player.png");
     player->frameRec = (Rectangle){0.0f, 0.0f, (float)player->texture.width/6, 
                         (float)player->texture.height/10};
 

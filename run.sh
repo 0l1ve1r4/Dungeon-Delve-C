@@ -10,9 +10,10 @@ FLAGS="-lraylib -lGL -lm -lpthread -ldl -lrt"
 
 clear
 
+rm $OUTPUT || echo "Error removing $OUTPUT" # Remove the old binary
+
 $COMPILER -o $OUTPUT $MAIN $UTILS $ENTITIES $RENDER $FLAGS
 
 
 ./$OUTPUT || echo "Error running $OUTPUT"
 
-# rm $OUTPUT || echo "Error removing $OUTPUT"

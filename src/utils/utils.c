@@ -3,7 +3,31 @@
 void debug_log(char *message, char* escape_code){
     
     char* RESET = "\033[0m";
-    printf("%s%s%s", escape_code, message, RESET);
+    char* ERROR = "\033[0;31m";
+    char* WARNING = "\033[0;33m";
+    char* INFO = "\033[0;36m";
+
+    char* text;
+
+    if (strcmp(escape_code, "ERROR") == 0){ 
+        escape_code = ERROR;
+        text = "ERROR";
+    }
+
+    else if (strcmp(escape_code, "WARNING") == 0) {
+        escape_code = WARNING;
+        text = "WARNING";}
+
+    else if (strcmp(escape_code, "INFO") == 0){
+        escape_code = INFO;
+        text = "INFO";}
+
+    else {
+        escape_code = INFO;
+        text = "INFO";}
+    
+
+    printf("%s[%s]%s%s", escape_code, text, RESET, message);
 }
 
 void ShowControls(void)

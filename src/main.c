@@ -3,7 +3,7 @@
 #include "entity/player.h"
 #include "render/render.h"
 #include "utils/utils.h"
-
+#include "enums.h"
 
 int main(void)
 {
@@ -13,15 +13,7 @@ int main(void)
     Player *player = InitPlayer();
     Camera2D camera = InitPlayerCamera(player);
 
-    EnvItem envItems[] = {
-        {{ 0, 0, 1000, 400 }, 0, LIGHTGRAY },
-        {{ 0, 400, 1000, 200 }, 1, GRAY },
-        {{ 300, 200, 400, 10 }, 1, GRAY },
-        {{ 250, 300, 100, 10 }, 1, GRAY },
-        {{ 650, 300, 100, 10 }, 1, GRAY }
-    };
-
-    int envItemsLength = sizeof(envItems)/sizeof(envItems[0]);
+    Tile** tiles = CreateGrassTiles(MAP_LENGTH, GRASS);
 
     static int currentFrame = 0;
     static int framesCounter = 0;
@@ -56,10 +48,17 @@ int main(void)
             ClearBackground(LIGHTGRAY);
             
             BeginMode2D(camera);
+                for(int i = 0; i < MAP_LENGTH; i++){
+                    for(int j = 0; j < MAP_LENGTH; j++){
+                        DrawTexture(tiles[i][j].texture, tiles[i][j].position.x, tiles[i][j].position.y, WHITE);
 
-                for (int i = 0; i < envItemsLength; i++) DrawRectangleRec(envItems[i].rect, envItems[i].color);
+
+                    }
+                }
+
 
                 DrawTextureRec(player->texture, player->frameRec, player->position, WHITE);
+
             EndMode2D();
 
             ShowControls();

@@ -12,9 +12,7 @@
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 450
 #define SCREEN_TITLE "Dungeon Delve C"
-#define TARGET_FPS 60
-
-
+#define TARGET_FPS 6000
 
 #define PLAYER_SPEED 200.0f
 #define PLAYER_FRAME_SPEED 6
@@ -32,3 +30,6 @@
 #define BACK_ATTACK_ANIMATION 8
 
 #define DEAD_ANIMATION 9
+
+
+#define MAP_LENGTH 100000 // Vector[length x length]
