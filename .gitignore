@@ -4,8 +4,8 @@
 ## Get latest from https://github.com/github/gitignore/blob/main/VisualStudio.gitignore
 
 # Project related files
-.DungeonDelveC
-.util 
+DungeonDelveC
+util 
 
 
 # User-specific files

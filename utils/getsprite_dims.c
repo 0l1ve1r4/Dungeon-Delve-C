@@ -29,10 +29,10 @@ int main(void)
     InitWindow(screenWidth, screenHeight, "raylib [texture] example - sprite anim");
 
     // NOTE: Textures MUST be loaded after Window initialization (OpenGL context is required)
-    Texture2D scarfy = LoadTexture("src/resources/characters/player.png");        // Texture loading
+    Texture2D scarfy = LoadTexture("resources/GRASS.png");        // Texture loading
 
     Vector2 position = { 350.0f, 280.0f };
-    Rectangle frameRec = { 0.0f, 0.0f, (float)scarfy.width/6, (float)scarfy.height/10 };
+    Rectangle frameRec = { 0.0f, 0.0f, (float)scarfy.width/25, (float)scarfy.height/14 };
     int currentFrame = 0;
 
     int framesCounter = 0;
@@ -55,7 +55,7 @@ int main(void)
 
             if (currentFrame > 5) currentFrame = 0;
 
-            frameRec.x = (float)currentFrame*(float)scarfy.width/6;
+            frameRec.x = (float)currentFrame*(float)scarfy.width/25;
         }
 
         // Control frames speed

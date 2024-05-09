@@ -12,12 +12,20 @@ int main(void)
 
     Player *player = InitPlayer();
     Camera2D camera = InitPlayerCamera(player);
+    Tile*** TileMap = CreateMap(MAP_LENGTH, GRASS);
 
-    Tile** tiles = CreateGrassTiles(MAP_LENGTH, GRASS);
+    InitAudioDevice();              // Initialize audio device
+
+    Music music = LoadMusicStream("resources/sounds/background.mp3");
+
+    PlayMusicStream(music);
 
     static int currentFrame = 0;
     static int framesCounter = 0;
     static int framesSpeed = 6;
+
+    RenderTexture2D fogOfWar = LoadRenderTexture(MAP_LENGTH, MAP_LENGTH);
+    SetTextureFilter(fogOfWar.texture, TEXTURE_FILTER_BILINEAR);
 
     //=======================================================================================
     // Main game loop
@@ -29,41 +37,43 @@ int main(void)
         //==================================================================================
         // Update
         //==================================================================================
-        
+        UpdateMusicStream(music);   // Update music buffer with new stream data
+
         float deltaTime = GetFrameTime();
         framesCounter++;
 
         framesCounter = (framesCounter >= (TARGET_FPS/PLAYER_FRAME_SPEED)) ? 0 : framesCounter;
         currentFrame = (framesCounter == 0) ? ((currentFrame > 5) ? 0 : currentFrame + 1) : currentFrame;
 
-        // Atualize o jogador e passe o número do quadro atual como parâmetro
         UpdatePlayer(player, deltaTime, currentFrame);
         UpdatePlayerCamera(&camera, player, deltaTime, SCREEN_WIDTH, SCREEN_HEIGHT);
+        
+        //if (GetMusicTimePlayed(music) > 1.0f) PauseMusicStream(music);
+        //----------------------------------------------------------------------------------
 
         //==================================================================================
         // Draw
         //==================================================================================
-
         BeginDrawing();
-            ClearBackground(LIGHTGRAY);
+            ClearBackground(BLACK);
             
             BeginMode2D(camera);
-                for(int i = 0; i < MAP_LENGTH; i++){
-                    for(int j = 0; j < MAP_LENGTH; j++){
-                        DrawTexture(tiles[i][j].texture, tiles[i][j].position.x, tiles[i][j].position.y, WHITE);
+                
 
-
-                    }
-                }
-
-
+                
+                DrawFullMap(TileMap);
                 DrawTextureRec(player->texture, player->frameRec, player->position, WHITE);
+                
+                DrawCircleGradient(player->position.x, player->position.y, PLAYER_TILE_VISIBILITY, Fade(WHITE, 0.1f), Fade(BLACK, 1.0f));
+                DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, Fade(BLACK, 0.8f));
+
 
             EndMode2D();
 
             ShowControls();
             GetGameInfo(player);
         EndDrawing();
+
     }
 
     //==================================================================================
