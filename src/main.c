@@ -42,9 +42,8 @@ int main(void)
 
         UpdatePlayer(player, deltaTime, currentFrame);
         UpdatePlayerCamera(&camera, player, deltaTime, SCREEN_WIDTH, SCREEN_HEIGHT);
+        UpdateMapCollision(player, TileMap, MAP_LENGTH, __TILE_SIZE);
         
-        //if (GetMusicTimePlayed(music) > 1.0f) PauseMusicStream(music);
-        //----------------------------------------------------------------------------------
 
         //==================================================================================
         // Draw
@@ -55,8 +54,11 @@ int main(void)
             BeginMode2D(camera);
                 
                 DrawFullMap(TileMap, camera);
-                DrawTextureRec(player->texture, player->frameRec, player->position, WHITE);
-                DrawCircleGradient(player->position.x, player->position.y, PLAYER_TILE_VISIBILITY, Fade(BLACK, 0.7f), Fade(BLACK, 1.0f));
+                
+                //DrawTextureRec(player->texture, player->frameRec, player->position, WHITE);
+
+                DrawPlayer(player);                
+                DrawCircleGradient(player->position.x, player->position.y, PLAYER_TILE_VISIBILITY, Fade(BLACK, 0.8f), Fade(BLACK, 10.0f));
 
 
             EndMode2D();

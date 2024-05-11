@@ -1,7 +1,6 @@
 #include "render.h"
 
-static int num_matrices = 5;
-static int x_gen = 0;
+static __uint8_t num_matrices = 5;
 
 Vector2** SetTilePosition(int matrix_length, int tile_size){
 
@@ -17,7 +16,7 @@ Vector2** SetTilePosition(int matrix_length, int tile_size){
 
 }
 
-Tile InitTile(int x, int y, int isBlocking, char *texturePath, int TILE_SIZE, int probability){
+Tile InitTile(int x, int y, bool isBlocking, char *texturePath, int TILE_SIZE, int probability){
 
     Tile tile;
     tile.position = (Vector2){ 0, 0 };
@@ -40,7 +39,7 @@ Tile InitTile(int x, int y, int isBlocking, char *texturePath, int TILE_SIZE, in
 }
 
 
-Tile** CreateTileMap(int matrix_length, int tile_size, char* tilePath, int spawn_probability){
+Tile** CreateTileMap(bool blocking, int matrix_length, int tile_size, char* tilePath, int spawn_probability){
 
     Vector2** TilesPositions = SetTilePosition(matrix_length, tile_size);
     
@@ -52,7 +51,7 @@ Tile** CreateTileMap(int matrix_length, int tile_size, char* tilePath, int spawn
     
     for (int i = 0; i < matrix_length; i++){
         for (int j = 0; j < matrix_length; j++){
-            tiles[i][j] = InitTile(TilesPositions[i][j].x, TilesPositions[i][j].y, 0, tilePath, tile_size, spawn_probability);
+            tiles[i][j] = InitTile(TilesPositions[i][j].x, TilesPositions[i][j].y, blocking, tilePath, tile_size, spawn_probability);
         }
     free(TilesPositions[i]);
     }
@@ -65,23 +64,77 @@ Tile** CreateTileMap(int matrix_length, int tile_size, char* tilePath, int spawn
 
 Tile*** CreateMap(int matrix_length, int tile_size){
 
-    Tile*** TileMaps = (Tile***)malloc(sizeof(Tile**) * num_matrices);
-    TileMaps[0] = CreateTileMap(matrix_length, tile_size, GRASS_TILE_PATH, 100);
-    TileMaps[1] = CreateTileMap(matrix_length, tile_size, BUSH_TILE_PATH, 20);
-    TileMaps[2] = CreateTileMap(matrix_length, tile_size, ROCK1_TILE_PATH, 1);
-    TileMaps[3] = CreateTileMap(matrix_length, tile_size, ROCK2_TILE_PATH, 1);
-    TileMaps[4] = CreateTileMap(matrix_length, tile_size, WOOD_TILE_PATH, 1);
+    __uint8_t num_objects = num_matrices - 1;
+
+    Tile*** TileMap = (Tile***)malloc(sizeof(Tile**) * num_matrices); 
+    Tile*** TileObjects = (Tile***)malloc(sizeof(Tile**) * num_objects); // Just colisions
+
+    TileMap[0] = CreateTileMap(false, matrix_length, tile_size, GRASS_TILE_PATH, 100);
+
+    TileObjects[0] = CreateTileMap(true, matrix_length, tile_size, BUSH_TILE_PATH, 20);
+    TileObjects[1] = CreateTileMap(true, matrix_length, tile_size, ROCK1_TILE_PATH, 1);
+    TileObjects[2] = CreateTileMap(true, matrix_length, tile_size, ROCK2_TILE_PATH, 1);
+    TileObjects[3] = CreateTileMap(true, matrix_length, tile_size, WOOD_TILE_PATH, 1);
  
-    return TileMaps;
+    TileObjects = remove_duplicates(TileObjects, matrix_length, num_objects);
+
+    for (int i = 1; i < num_matrices; i++)
+        TileMap[i] = TileObjects[i - 1];
+
+
+    return TileMap;
 
 };
 
-void DrawTileMap(Tile **tiles, Camera2D camera) {
-    // Calculate player position in tile coordinates
-    int player_x = camera.target.y / __TILE_SIZE; // Swapping x and y
-    int player_y = camera.target.x / __TILE_SIZE; // Swapping x and y
+Tile*** remove_duplicates(Tile*** TileMaps, int matrix_length, __uint8_t num_objects){
+    
+    for (int i = 0; i < matrix_length; i++)
+        for (int j = 0; j < matrix_length; j++)
+            for (int k = 0; k < num_objects - 1; k++){
+                
+                if (TileMaps[k][0][0].isValid){
+                    TileMaps[k][0][0].isValid = false; // Avoid collisionin the spawn point
+                }
+                
+                if (TileMaps[k][i][j].isValid)
+                    for (int l = k + 1; l < num_objects; l++)
+                        if (TileMaps[l][i][j].isValid)
+                            TileMaps[l][i][j].isValid = false;
 
-    // Calculate the range of tiles to render around the player
+            }
+    return TileMaps;
+}
+
+void UpdateMapCollision(Player *player, Tile ***tiles, int matrix_length, int TILE_SIZE){
+
+    Rectangle player_rect = (Rectangle){player->position.x, player->position.y, TILE_SIZE-2, TILE_SIZE-5};
+
+    for (int i = 1; i < num_matrices; i++){
+            for (int j = 0; j < matrix_length; j++){
+                for (int k = 0; k < matrix_length; k++){
+                    if (tiles[i][j][k].isValid){
+                        if (CheckCollisionRecs(player_rect, tiles[i][j][k].rect)){
+                            player->position = player->last_position;
+                        }
+                    }
+                }
+            }
+            
+            
+
+
+                
+            }
+        }
+
+
+
+
+void DrawTileMap(Tile **tiles, Camera2D camera) {
+
+    int player_x = camera.target.y / __TILE_SIZE; 
+    int player_y = camera.target.x / __TILE_SIZE;
+
     int start_i = player_x - RENDER_DISTANCE;
     int end_i = player_x + RENDER_DISTANCE;
     int start_j = player_y - RENDER_DISTANCE;
@@ -93,10 +146,9 @@ void DrawTileMap(Tile **tiles, Camera2D camera) {
     end_i = (end_i >= MAP_LENGTH) ? MAP_LENGTH - 1 : end_i;
     end_j = (end_j >= MAP_LENGTH) ? MAP_LENGTH - 1 : end_j;
 
-    // Render tiles within the calculated range
     for (int i = start_i; i <= end_i; i++) {
         for (int j = start_j; j <= end_j; j++) {
-            //if (tiles[i][j].isValid)
+            if (tiles[i][j].isValid)
                 DrawTextureRec(tiles[i][j].texture, tiles[i][j].rect, tiles[i][j].position, WHITE);
         }
     }

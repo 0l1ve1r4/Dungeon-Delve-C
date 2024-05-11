@@ -15,5 +15,5 @@ rm $OUTPUT || echo "Error removing $OUTPUT" # Remove the old binary
 $COMPILER -o $OUTPUT $MAIN $UTILS $ENTITIES $RENDER $FLAGS
 
 
-timeout 120s ./$OUTPUT || echo "Error running $OUTPUT"
+timeout 60s ./$OUTPUT || echo "Error running $OUTPUT"
 

@@ -6,6 +6,7 @@
 typedef struct {
     
     Vector2 position;   // Position of the player (x, y)
+    Vector2 last_position;
     Texture2D texture;  // Texture to represent the player
     Rectangle frameRec; // Sprite frame rectangle
 
@@ -23,7 +24,7 @@ typedef struct {
     Rectangle rect;
     
     bool isValid;
-    int blocking;
+    bool blocking;
 
 } Tile;
 

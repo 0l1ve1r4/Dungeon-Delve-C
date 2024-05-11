@@ -5,7 +5,7 @@ Camera2D InitPlayerCamera(Player *player){
     camera.target = player->position;
     camera.offset = (Vector2){ SCREEN_WIDTH/2.0f, SCREEN_HEIGHT/2.0f };
     camera.rotation = 0.0f;
-    camera.zoom = 3.0f;
+    camera.zoom = 4.0f;
 
     return camera;
 
@@ -18,9 +18,7 @@ void UpdatePlayerCamera(Camera2D *camera, Player *player, float delta, int width
     static float fractionSpeed = 0.8f;
 
     static float maxZoom = 4.0f;
-    static float minZoom = 3.0f;
-
-
+    static float minZoom = 3.6f;
 
     int mouseWheel = GetMouseWheelMove();
     if (mouseWheel != 0)

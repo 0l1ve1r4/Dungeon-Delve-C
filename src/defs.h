@@ -18,7 +18,7 @@
 // Player definitions
 //==============================================================================
 
-#define PLAYER_TILE_VISIBILITY  240   
+#define PLAYER_TILE_VISIBILITY  200   
 #define PLAYER_SPEED 100.0f
 #define PLAYER_FRAME_SPEED 10
 
@@ -37,8 +37,9 @@
 #define DEAD_ANIMATION 9
 
 
-#define MAP_LENGTH 100 // Vector[length x length]
+#define MAP_LENGTH 50 // Vector[length x length]
 #define __TILE_SIZE 16
+#define __PLAYER_SIZE 32
 #define RENDER_DISTANCE 13
 
 
