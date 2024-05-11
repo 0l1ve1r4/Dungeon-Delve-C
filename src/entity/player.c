@@ -6,7 +6,7 @@ static int current_animation = 0;
 Player* InitPlayer(void){
 
     Player* player = (Player*)malloc(sizeof(Player));
-    player->position = (Vector2){SCREEN_WIDTH/2, SCREEN_HEIGHT/2};
+    player->position = (Vector2){0, 0};
     player->speed = PLAYER_SPEED;
     
     player->texture = LoadTexture("resources/characters/player.png");

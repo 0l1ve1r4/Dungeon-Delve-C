@@ -9,5 +9,6 @@ void debug_log(char *message, char* escape_code);
 // GAME INFO - FUNCTIONS //
 void GetGameInfo(Player* player);
 void ShowControls(void);
+void InitRandomSeed(void);
 
 #endif

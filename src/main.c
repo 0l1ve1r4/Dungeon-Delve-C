@@ -7,25 +7,20 @@
 
 int main(void)
 {
-
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE);
+    InitAudioDevice();             
+    InitRandomSeed();
 
     Player *player = InitPlayer();
     Camera2D camera = InitPlayerCamera(player);
-    Tile*** TileMap = CreateMap(MAP_LENGTH, GRASS);
-
-    InitAudioDevice();              // Initialize audio device
+    Tile*** TileMap = CreateMap(MAP_LENGTH, __TILE_SIZE);
 
     Music music = LoadMusicStream("resources/sounds/background.mp3");
 
     PlayMusicStream(music);
 
-    static int currentFrame = 0;
-    static int framesCounter = 0;
-    static int framesSpeed = 6;
-
-    RenderTexture2D fogOfWar = LoadRenderTexture(MAP_LENGTH, MAP_LENGTH);
-    SetTextureFilter(fogOfWar.texture, TEXTURE_FILTER_BILINEAR);
+    static __uint8_t currentFrame = 0;
+    static __uint8_t framesCounter = 0;
 
     //=======================================================================================
     // Main game loop
@@ -59,13 +54,9 @@ int main(void)
             
             BeginMode2D(camera);
                 
-
-                
-                DrawFullMap(TileMap);
+                DrawFullMap(TileMap, camera);
                 DrawTextureRec(player->texture, player->frameRec, player->position, WHITE);
-                
-                DrawCircleGradient(player->position.x, player->position.y, PLAYER_TILE_VISIBILITY, Fade(WHITE, 0.1f), Fade(BLACK, 1.0f));
-                DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, Fade(BLACK, 0.8f));
+                DrawCircleGradient(player->position.x, player->position.y, PLAYER_TILE_VISIBILITY, Fade(BLACK, 0.7f), Fade(BLACK, 1.0f));
 
 
             EndMode2D();

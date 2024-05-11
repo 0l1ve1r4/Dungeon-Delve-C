@@ -1,16 +1,34 @@
 #include "render.h"
 
 static int num_matrices = 5;
+static int x_gen = 0;
+
+Vector2** SetTilePosition(int matrix_length, int tile_size){
+
+    Vector2** TilesPositions = (Vector2**)malloc(sizeof(Vector2*) * matrix_length);
+    for (int X = 0; X < matrix_length; X++) 
+        TilesPositions[X] = (Vector2*)malloc(sizeof(Vector2) * matrix_length);
+    
+    for (int Y = 0; Y < matrix_length; Y++)
+        for (int X = 0; X < matrix_length; X++)
+            TilesPositions[Y][X] = (Vector2){X * tile_size, Y * tile_size};
+        
+    return TilesPositions;
+
+}
 
 Tile InitTile(int x, int y, int isBlocking, char *texturePath, int TILE_SIZE, int probability){
 
     Tile tile;
+    tile.position = (Vector2){ 0, 0 };
+    tile.isValid = false;
 
     int random = rand() % 100;
     if (random > probability) return tile;
 
     tile.position = (Vector2){ x, y };
     tile.texture = LoadTexture(texturePath);
+    tile.isValid = true;
     tile.texture.width = TILE_SIZE;
     tile.texture.height = TILE_SIZE;
 
@@ -21,99 +39,73 @@ Tile InitTile(int x, int y, int isBlocking, char *texturePath, int TILE_SIZE, in
     return tile;
 }
 
-Tile* InitTiles(Vector2 *positions, int length, char *texturePath, int TILE_SIZE){
 
-    Tile *tiles = (Tile*)malloc(sizeof(Tile) * length);
+Tile** CreateTileMap(int matrix_length, int tile_size, char* tilePath, int spawn_probability){
 
-    for (int i = 0; i < length; i++){
-        tiles[i] = InitTile(positions[i].x, positions[i].y, 0, texturePath, TILE_SIZE, 100);
-    }
-
-    return tiles;
-
-}
-
-Tile** InitMatrixTiles(Vector2** positions, int length, char *texturePath, int TILE_SIZE, int probability){
-
-    Tile **tiles = (Tile**)malloc(sizeof(Tile*) * length);
+    Vector2** TilesPositions = SetTilePosition(matrix_length, tile_size);
     
-    for (int i = 0; i < length; i++) 
-        tiles[i] = (Tile*)malloc(sizeof(Tile) * length);
+
+    Tile **tiles = (Tile**)malloc(sizeof(Tile*) * matrix_length);
     
-    for (int i = 0; i < length; i++){
-        for (int j = 0; j < length; j++){
-            tiles[i][j] = InitTile(positions[i][j].x, positions[i][j].y, 0, texturePath, TILE_SIZE, probability);
+    for (int i = 0; i < matrix_length; i++) 
+        tiles[i] = (Tile*)malloc(sizeof(Tile) * matrix_length);
+    
+    for (int i = 0; i < matrix_length; i++){
+        for (int j = 0; j < matrix_length; j++){
+            tiles[i][j] = InitTile(TilesPositions[i][j].x, TilesPositions[i][j].y, 0, tilePath, tile_size, spawn_probability);
         }
-    }
-
-    return tiles;
-}
-
-Tile** CreateTileMap(int length, int TILE_SIZE, char* tilePath, int probability){
-
-    Vector2** TilesPositions = (Vector2**)malloc(sizeof(Vector2*) * length);
-    for (int i = 0; i < length; i++) {
-        TilesPositions[i] = (Vector2*)malloc(sizeof(Vector2) * length);
-    }
-
-    for (int i = 0; i < length; i++){
-        for (int j = 0; j < length; j++){
-            int pos_x = j * TILE_SIZE;
-            int pos_y = i * TILE_SIZE;
-            TilesPositions[i][j] = (Vector2){pos_x, pos_y};
-        }
-    }
-
-    Tile **tiles = InitMatrixTiles(TilesPositions, length, tilePath, TILE_SIZE, probability);
-
-    for (int i = 0; i < length; i++) {
-        free(TilesPositions[i]);
+    free(TilesPositions[i]);
     }
     free(TilesPositions);
 
+
     return tiles;
 }
 
 
-
-void DrawTileMap(Tile **tiles){
-    for(int i = 0; i < MAP_LENGTH; i++){
-        for(int j = 0; j < MAP_LENGTH; j++)
-            DrawTextureRec(tiles[i][j].texture, tiles[i][j].rect, tiles[i][j].position, WHITE);
-    }
-}
-
-
-Tile*** CreateMap(int length, int tile_size){
+Tile*** CreateMap(int matrix_length, int tile_size){
 
     Tile*** TileMaps = (Tile***)malloc(sizeof(Tile**) * num_matrices);
-
-    Tile** GrassTileMap = CreateTileMap(length, tile_size, GRASS_TILE_PATH, 100);
-    Tile** BushTileMap = CreateTileMap(length, tile_size, BUSH_TILE_PATH, 5);   
-    Tile** Rock1TileMap = CreateTileMap(length, tile_size, ROCK1_TILE_PATH, 1);
-    Tile** Rock2TileMap = CreateTileMap(length, tile_size, ROCK2_TILE_PATH, 1);
-    Tile** WoodTileMap = CreateTileMap(length, tile_size, WOOD_TILE_PATH, 1);
-
-    TileMaps[0] = GrassTileMap;
-    TileMaps[1] = BushTileMap;
-    TileMaps[2] = Rock1TileMap;
-    TileMaps[3] = Rock2TileMap;
-    TileMaps[4] = WoodTileMap;
-
-    // Use the tileMaps vector as needed
-
+    TileMaps[0] = CreateTileMap(matrix_length, tile_size, GRASS_TILE_PATH, 100);
+    TileMaps[1] = CreateTileMap(matrix_length, tile_size, BUSH_TILE_PATH, 20);
+    TileMaps[2] = CreateTileMap(matrix_length, tile_size, ROCK1_TILE_PATH, 1);
+    TileMaps[3] = CreateTileMap(matrix_length, tile_size, ROCK2_TILE_PATH, 1);
+    TileMaps[4] = CreateTileMap(matrix_length, tile_size, WOOD_TILE_PATH, 1);
+ 
     return TileMaps;
 
 };
 
-void DrawFullMap(Tile ***tiles){
-    for (int i = 0; i < num_matrices; i++){
-        DrawTileMap(tiles[i]);
+void DrawTileMap(Tile **tiles, Camera2D camera) {
+    // Calculate player position in tile coordinates
+    int player_x = camera.target.y / __TILE_SIZE; // Swapping x and y
+    int player_y = camera.target.x / __TILE_SIZE; // Swapping x and y
+
+    // Calculate the range of tiles to render around the player
+    int start_i = player_x - RENDER_DISTANCE;
+    int end_i = player_x + RENDER_DISTANCE;
+    int start_j = player_y - RENDER_DISTANCE;
+    int end_j = player_y + RENDER_DISTANCE;
+
+    // Ensure start and end indices are within bounds
+    start_i = (start_i < 0) ? 0 : start_i;
+    start_j = (start_j < 0) ? 0 : start_j;
+    end_i = (end_i >= MAP_LENGTH) ? MAP_LENGTH - 1 : end_i;
+    end_j = (end_j >= MAP_LENGTH) ? MAP_LENGTH - 1 : end_j;
+
+    // Render tiles within the calculated range
+    for (int i = start_i; i <= end_i; i++) {
+        for (int j = start_j; j <= end_j; j++) {
+            //if (tiles[i][j].isValid)
+                DrawTextureRec(tiles[i][j].texture, tiles[i][j].rect, tiles[i][j].position, WHITE);
+        }
     }
+}
 
-    // Dark fog
 
 
+void DrawFullMap(Tile ***tiles, Camera2D camera){
+    for (int i = 0; i < num_matrices; i++) DrawTileMap(tiles[i], camera);
 }
 
 

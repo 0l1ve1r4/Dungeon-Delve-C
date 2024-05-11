@@ -5,19 +5,15 @@
 #include "../structs.h"
 #include "../utils/utils.h"
 
+Vector2** SetTilePosition(int matrix_length, int tile_size);
 
 Tile InitTile(int x, int y, int isBlocking, char *texturePath, int TILE_SIZE, int probability);
-Tile InitRandomTile(int x, int y, int isBlocking, char *spritesheetPath, int TILE_SIZE_MULTIPLIER, 
-                    int num_sprites_width, int num_sprites_height);
-
-Tile* InitTiles(Vector2 *positions, int length, char *texturePath, int TILE_SIZE);
-Tile** InitMatrixTiles(Vector2** positions, int length, char *texturePath, int TILE_SIZE, int probability);
 Tile** CreateTileMap(int length, int TILE_SIZE, char* tilePath, int probability);
-
 Tile*** CreateMap(int length, int tile_size);
 
-void DrawTileMap(Tile **tiles);
-void DrawFullMap(Tile ***tiles);
+void DrawTileMap(Tile **tiles, Camera2D camera);
+void DrawFullMap(Tile ***tiles, Camera2D camera);
+
 
 // CAMERA RELATED - FUNCTIONS //
 Camera2D InitPlayerCamera(Player *player);

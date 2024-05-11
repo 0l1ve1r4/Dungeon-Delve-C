@@ -50,11 +50,15 @@ void GetGameInfo(Player* player){
     int player_x = player->position.x;
     int player_y = player->position.y;
 
-    sprintf(info_text, "| FPS: %i | X: %i Y: %i |", frames_per_second, player_x, player_y);
+    sprintf(info_text, "| FPS: %i | X: %i Y: %i |", frames_per_second, player_x / __TILE_SIZE, player_y / __TILE_SIZE);
     
-    float right_corner = (float)SCREEN_WIDTH/10 * 8;
+    float right_corner = (float)SCREEN_WIDTH/10 * 6;
 
-    DrawText(info_text, right_corner, 0, 13, BLACK);
+    DrawText(info_text, right_corner, 0, 15, WHITE);
     
 
+}
+
+void InitRandomSeed(void){
+    srand(time(NULL));
 }

@@ -1,6 +1,5 @@
 #include "raylib.h"
 #include "raymath.h"
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -39,7 +38,8 @@
 
 
 #define MAP_LENGTH 100 // Vector[length x length]
-
+#define __TILE_SIZE 16
+#define RENDER_DISTANCE 13
 
 
 // TILES PATHS //

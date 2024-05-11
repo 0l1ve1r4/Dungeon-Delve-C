@@ -22,6 +22,7 @@ typedef struct {
     Texture2D texture;    
     Rectangle rect;
     
+    bool isValid;
     int blocking;
 
 } Tile;
