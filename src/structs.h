@@ -5,14 +5,16 @@
 
 typedef struct {
     
+    Vector2 spawn_point;
     Vector2 position;   // Position of the player (x, y)
     Vector2 last_position;
     Texture2D texture;  // Texture to represent the player
     Rectangle frameRec; // Sprite frame rectangle
+    Sound walk;
 
     int last_animation;
     
-    float speed;
+    int speed;
     
 
 } Player;

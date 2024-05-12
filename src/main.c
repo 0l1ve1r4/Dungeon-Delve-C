@@ -13,14 +13,14 @@ int main(void)
 
     Player *player = InitPlayer();
     Camera2D camera = InitPlayerCamera(player);
-    Tile*** TileMap = CreateMap(MAP_LENGTH, __TILE_SIZE);
+    Tile*** TileMap = CreateMap(MAP_LENGTH, __TILE_SIZE, player);
 
-    Music music = LoadMusicStream("resources/sounds/background.mp3");
+    Music music = LoadMusicStream("res/sounds/background.mp3");
 
     PlayMusicStream(music);
 
-    static __uint8_t currentFrame = 0;
-    static __uint8_t framesCounter = 0;
+    static uint8_t currentFrame = 0;
+    static uint8_t framesCounter = 0;
 
     //=======================================================================================
     // Main game loop
@@ -58,7 +58,7 @@ int main(void)
                 //DrawTextureRec(player->texture, player->frameRec, player->position, WHITE);
 
                 DrawPlayer(player);                
-                DrawCircleGradient(player->position.x, player->position.y, PLAYER_TILE_VISIBILITY, Fade(BLACK, 0.8f), Fade(BLACK, 10.0f));
+                DrawCircleGradient(player->position.x, player->position.y, PLAYER_TILE_VISIBILITY, Fade(BLACK, 0.1f), Fade(BLACK, 10.0f));
 
 
             EndMode2D();

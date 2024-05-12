@@ -6,7 +6,7 @@ MAIN="src/main.c"
 OUTPUT="DungeonDelveC"
 COMPILER="gcc"
 
-FLAGS="-lraylib -lGL -lm -lpthread -ldl -lrt"
+FLAGS="-lraylib -lGL -lm"
 
 clear
 
@@ -15,5 +15,5 @@ rm $OUTPUT || echo "Error removing $OUTPUT" # Remove the old binary
 $COMPILER -o $OUTPUT $MAIN $UTILS $ENTITIES $RENDER $FLAGS
 
 
-timeout 60s ./$OUTPUT || echo "Error running $OUTPUT"
+timeout 50s ./$OUTPUT || echo "Error running $OUTPUT"
 

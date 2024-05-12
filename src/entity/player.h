@@ -7,9 +7,10 @@
 
 Player* InitPlayer(void);
 
-// Function prototypes
 void UpdatePlayer(Player *player, float deltaTime, int currentFrame);
-void MovePlayer(Player *player, float deltaTime, int currentFrame);
+bool isMoving(Player *player, float deltaTime, int currentFrame);
+bool isAttacking(Player *player);
+
 void DrawPlayer(Player *player);
 void UpdateFrameRec(Player *player, int currentFrame);
 void PlayIdleAnimation(Player *player, int currentFrame);

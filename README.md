@@ -27,7 +27,7 @@ To compile and run the game, execute the `run.sh` script provided in the reposit
     └── render/
         ├── camera.c
         ├── render.c
-    └── resources/ *(Images and sounds)*
+    └── res/ *(Images and sounds)*
 ```
 
 # Contributing

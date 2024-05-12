@@ -2,7 +2,7 @@
 
 Camera2D InitPlayerCamera(Player *player){
     Camera2D camera = { 0 };
-    camera.target = player->position;
+    camera.target = Vector2Zero();
     camera.offset = (Vector2){ SCREEN_WIDTH/2.0f, SCREEN_HEIGHT/2.0f };
     camera.rotation = 0.0f;
     camera.zoom = 4.0f;

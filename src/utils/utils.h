@@ -10,5 +10,5 @@ void debug_log(char *message, char* escape_code);
 void GetGameInfo(Player* player);
 void ShowControls(void);
 void InitRandomSeed(void);
-
+unsigned long mix(unsigned long a, unsigned long b, unsigned long c);
 #endif

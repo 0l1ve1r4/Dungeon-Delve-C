@@ -1,6 +1,6 @@
 #include "render.h"
 
-static __uint8_t num_matrices = 5;
+static uint8_t num_matrices = 5;
 
 Vector2** SetTilePosition(int matrix_length, int tile_size){
 
@@ -62,9 +62,9 @@ Tile** CreateTileMap(bool blocking, int matrix_length, int tile_size, char* tile
 }
 
 
-Tile*** CreateMap(int matrix_length, int tile_size){
+Tile*** CreateMap(int matrix_length, int tile_size, Player *player){
 
-    __uint8_t num_objects = num_matrices - 1;
+    uint8_t num_objects = num_matrices - 1;
 
     Tile*** TileMap = (Tile***)malloc(sizeof(Tile**) * num_matrices); 
     Tile*** TileObjects = (Tile***)malloc(sizeof(Tile**) * num_objects); // Just colisions
@@ -76,7 +76,7 @@ Tile*** CreateMap(int matrix_length, int tile_size){
     TileObjects[2] = CreateTileMap(true, matrix_length, tile_size, ROCK2_TILE_PATH, 1);
     TileObjects[3] = CreateTileMap(true, matrix_length, tile_size, WOOD_TILE_PATH, 1);
  
-    TileObjects = remove_duplicates(TileObjects, matrix_length, num_objects);
+    TileObjects = remove_duplicates(TileObjects, matrix_length, num_objects, player);
 
     for (int i = 1; i < num_matrices; i++)
         TileMap[i] = TileObjects[i - 1];
@@ -86,14 +86,16 @@ Tile*** CreateMap(int matrix_length, int tile_size){
 
 };
 
-Tile*** remove_duplicates(Tile*** TileMaps, int matrix_length, __uint8_t num_objects){
+Tile*** remove_duplicates(Tile*** TileMaps, int matrix_length, uint8_t num_objects, Player *player){
     
+    uint16_t spawn_x = player->spawn_point.x / __TILE_SIZE;
+    uint16_t spawn_y = player->spawn_point.y / __TILE_SIZE;
+
     for (int i = 0; i < matrix_length; i++)
         for (int j = 0; j < matrix_length; j++)
             for (int k = 0; k < num_objects - 1; k++){
-                
-                if (TileMaps[k][0][0].isValid){
-                    TileMaps[k][0][0].isValid = false; // Avoid collisionin the spawn point
+                if (TileMaps[k][spawn_x][spawn_y].isValid){
+                    TileMaps[k][spawn_x][spawn_y].isValid = false; // Avoid collision in the spawn point
                 }
                 
                 if (TileMaps[k][i][j].isValid)

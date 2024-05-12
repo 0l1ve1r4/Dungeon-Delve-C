@@ -1,9 +1,14 @@
 #include "raylib.h"
 #include "raymath.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <stdbool.h>    
+#include <sys/types.h>
+#include <unistd.h>
+#include <stdint.h>
 
 #define false 0
 #define true 1
@@ -37,15 +42,15 @@
 #define DEAD_ANIMATION 9
 
 
-#define MAP_LENGTH 50 // Vector[length x length]
+#define MAP_LENGTH 100 // Vector[length x length]
 #define __TILE_SIZE 16
 #define __PLAYER_SIZE 32
 #define RENDER_DISTANCE 13
 
 
 // TILES PATHS //
-#define GRASS_TILE_PATH "resources/tiles/grass.png"
-#define BUSH_TILE_PATH "resources/tiles/bush.png"
-#define ROCK1_TILE_PATH "resources/tiles/rock1.png"
-#define ROCK2_TILE_PATH "resources/tiles/rock2.png"
-#define WOOD_TILE_PATH "resources/tiles/wood.png"
+#define GRASS_TILE_PATH "res/tiles/grass.png"
+#define BUSH_TILE_PATH "res/tiles/bush.png"
+#define ROCK1_TILE_PATH "res/tiles/rock1.png"
+#define ROCK2_TILE_PATH "res/tiles/rock2.png"
+#define WOOD_TILE_PATH "res/tiles/wood.png"
