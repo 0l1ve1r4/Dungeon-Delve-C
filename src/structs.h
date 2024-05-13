@@ -26,7 +26,9 @@ typedef struct {
     Vector2 position;   // Position of the tile (x, y)
     Texture2D texture;    
     Rectangle rect;
-    
+    Sound break_sound;
+
+
     bool isValid;
     bool blocking;
 

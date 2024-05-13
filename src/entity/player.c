@@ -74,6 +74,12 @@ void isMoving(Player *player, float deltaTime, int currentFrame) {
         player->isMoving = false;
     }
 
+    if (player->isMoving && !IsSoundPlaying(player->walk)) {
+        PlaySound(player->walk);
+    }
+
+
+
 }
 
 

@@ -16,7 +16,7 @@ Vector2** SetTilePosition(int matrix_length, int tile_size){
 
 }
 
-Tile InitTile(int x, int y, bool isBlocking, char *texturePath, int TILE_SIZE, int probability){
+Tile InitTile(int x, int y, bool isBlocking, char *texturePath, int TILE_SIZE, int probability, char* break_sound){
 
     Tile tile;
     tile.position = (Vector2){ 0, 0 };
@@ -32,6 +32,7 @@ Tile InitTile(int x, int y, bool isBlocking, char *texturePath, int TILE_SIZE, i
     tile.texture.height = TILE_SIZE;
 
     tile.rect = (Rectangle){ x, y, tile.texture.width, tile.texture.height };
+    tile.break_sound = LoadSound(break_sound);
 
     tile.blocking = isBlocking;
 
@@ -39,7 +40,7 @@ Tile InitTile(int x, int y, bool isBlocking, char *texturePath, int TILE_SIZE, i
 }
 
 
-Tile** CreateTileMap(bool blocking, int matrix_length, int tile_size, char* tilePath, int spawn_probability){
+Tile** CreateTileMap(bool blocking, int matrix_length, int tile_size, char* tilePath, int spawn_probability, char* break_sound){
 
     Vector2** TilesPositions = SetTilePosition(matrix_length, tile_size);
     
@@ -51,7 +52,8 @@ Tile** CreateTileMap(bool blocking, int matrix_length, int tile_size, char* tile
     
     for (int i = 0; i < matrix_length; i++){
         for (int j = 0; j < matrix_length; j++){
-            tiles[i][j] = InitTile(TilesPositions[i][j].x, TilesPositions[i][j].y, blocking, tilePath, tile_size, spawn_probability);
+            tiles[i][j] = InitTile(TilesPositions[i][j].x, TilesPositions[i][j].y, 
+                        blocking, tilePath, tile_size, spawn_probability, break_sound);
         }
     free(TilesPositions[i]);
     }
@@ -69,13 +71,14 @@ Tile*** CreateMap(int matrix_length, int tile_size, Player *player){
     Tile*** TileMap = (Tile***)malloc(sizeof(Tile**) * num_matrices); 
     Tile*** TileObjects = (Tile***)malloc(sizeof(Tile**) * num_objects); // Just colisions
 
-    TileMap[0] = CreateTileMap(false, matrix_length, tile_size, GRASS_TILE_PATH, 100);
+    TileMap[0] = CreateTileMap(false, matrix_length, tile_size, GRASS_TILE_PATH, 100, "");
 
-    TileObjects[0] = CreateTileMap(true, matrix_length, tile_size, BUSH_TILE_PATH, 20);
-    TileObjects[1] = CreateTileMap(true, matrix_length, tile_size, ROCK1_TILE_PATH, 1);
-    TileObjects[2] = CreateTileMap(true, matrix_length, tile_size, ROCK2_TILE_PATH, 1);
-    TileObjects[3] = CreateTileMap(true, matrix_length, tile_size, WOOD_TILE_PATH, 1);
- 
+    TileObjects[0] = CreateTileMap(true, matrix_length, tile_size, BUSH_TILE_PATH, 20, "res/sounds/break_grass.mp3");
+    TileObjects[1] = CreateTileMap(true, matrix_length, tile_size, ROCK1_TILE_PATH, 1, "res/sounds/break_stone.mp3");
+    TileObjects[2] = CreateTileMap(true, matrix_length, tile_size, ROCK2_TILE_PATH, 1, "res/sounds/break_stone.mp3");
+    TileObjects[3] = CreateTileMap(true, matrix_length, tile_size, WOOD_TILE_PATH, 1, "res/sounds/break_wood.mp3");
+    
+    if (player != NULL)
     TileObjects = remove_duplicates(TileObjects, matrix_length, num_objects, player);
 
     for (int i = 1; i < num_matrices; i++)
@@ -102,6 +105,7 @@ Tile*** remove_duplicates(Tile*** TileMaps, int matrix_length, uint8_t num_objec
                     for (int l = k + 1; l < num_objects; l++)
                         if (TileMaps[l][i][j].isValid)
                             TileMaps[l][i][j].isValid = false;
+                            PlaySound(TileMaps[k][i][j].break_sound);
 
             }
     return TileMaps;
@@ -117,6 +121,10 @@ void UpdateMapCollision(Player *player, Tile ***tiles, int matrix_length, int TI
                     if (tiles[i][j][k].isValid){
                         if (CheckCollisionRecs(player_rect, tiles[i][j][k].rect)){
                             player->position = player->last_position;
+                        
+                        if (player->isAttacking) {
+                            tiles[i][j][k].isValid = false;
+                        
                         }
                     }
                 }
@@ -128,6 +136,7 @@ void UpdateMapCollision(Player *player, Tile ***tiles, int matrix_length, int TI
                 
             }
         }
+}
 
 
 

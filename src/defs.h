@@ -59,4 +59,10 @@
 #define ROCK2_TILE_PATH "res/tiles/plains/rock2.png"
 #define WOOD_TILE_PATH "res/tiles/plains/wood.png"
 //
+//==============================================================================
+// MAIN FUNCTIONS
+void main_loop(void);
+
+
+
 #endif
