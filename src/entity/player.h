@@ -7,12 +7,12 @@
 
 Player* InitPlayer(void);
 
-void UpdatePlayer(Player *player, float deltaTime, int currentFrame);
-bool isMoving(Player *player, float deltaTime, int currentFrame);
-bool isAttacking(Player *player);
 
+void isMoving(Player *player, float deltaTime, int currentFrame);
+void isAttacking(Player *player);
 void DrawPlayer(Player *player);
+void UpdatePlayer(Player *player, float deltaTime, int currentFrame);
 void UpdateFrameRec(Player *player, int currentFrame);
 void PlayIdleAnimation(Player *player, int currentFrame);
 
-#endif // STRUCTS_H
+#endif // PLAYER_H

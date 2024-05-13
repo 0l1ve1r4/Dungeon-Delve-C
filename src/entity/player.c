@@ -1,9 +1,6 @@
 #include "player.h"
 
 
-static int current_animation = 0;
-static bool is_attacking = false;
-
 Player* InitPlayer(void){
     Player* player = (Player*)malloc(sizeof(Player));
     Vector2 spawn_point = (Vector2){MAP_LENGTH/2 * __TILE_SIZE, MAP_LENGTH/2 * __TILE_SIZE};
@@ -18,6 +15,9 @@ Player* InitPlayer(void){
 
     player->last_animation = FRONT_WALK_ANIMATION;
     player->speed = PLAYER_SPEED;
+
+    player->isMoving = false;
+    player->isAttacking = false;
     
     return player;
 }
@@ -27,10 +27,10 @@ void UpdatePlayer(Player *player, float deltaTime, int currentFrame) {
 
     player->last_position = player->position;
 
-    bool move = isMoving(player, deltaTime, currentFrame);
-    bool attack = isAttacking(player);
+    isMoving(player, deltaTime, currentFrame);
+    isAttacking(player);
 
-    if (!move && !attack) {
+    if (!player->isMoving && !player->isAttacking) {
         PlayIdleAnimation(player, currentFrame);
         return;
     
@@ -38,69 +38,68 @@ void UpdatePlayer(Player *player, float deltaTime, int currentFrame) {
 
     UpdateFrameRec(player, currentFrame);
 
-    
-    player->last_animation = current_animation;
+    player->last_animation = player->last_animation;
 }
 
-bool isMoving(Player *player, float deltaTime, int currentFrame) {
-    bool move = false; 
-
-
+void isMoving(Player *player, float deltaTime, int currentFrame) {
 
     if (IsKeyDown(KEY_LEFT) || IsKeyDown(KEY_A)) {
         player->position.x -= player->speed * deltaTime;
-        current_animation = SIDE_WALK_ANIMATION;
+        player->last_animation
+ = SIDE_WALK_ANIMATION;
         if (player->texture.width > 0) player->texture.width *= -1;  
-        move = true; 
+        player->isMoving = true; 
     
     } else if (IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_D)) {
         player->position.x += player->speed * deltaTime;
-        current_animation = SIDE_WALK_ANIMATION;
+        player->last_animation
+ = SIDE_WALK_ANIMATION;
         if (player->texture.width < 0) player->texture.width *= -1; 
-        move = true; 
+        player->isMoving = true;  
     
     } else if (IsKeyDown(KEY_UP) || IsKeyDown(KEY_W)) {
         player->position.y -= player->speed * deltaTime;
-        current_animation = BACK_WALK_ANIMATION;
-        move = true; 
+        player->last_animation
+ = BACK_WALK_ANIMATION;
+        player->isMoving = true;  
     
     } else if (IsKeyDown(KEY_DOWN) || IsKeyDown(KEY_S)) {
         player->position.y += player->speed * deltaTime;
-        current_animation = FRONT_WALK_ANIMATION;
-        move = true; 
+        player->last_animation
+ = FRONT_WALK_ANIMATION;
+        player->isMoving = true;  
     }
 
-    //if (move && !IsSoundPlaying(player->walk)) {
-    //    PlaySound(player->walk);
-    //}
+    else {
+        player->isMoving = false;
+    }
 
-    return move;
 }
 
 
-bool isAttacking(Player *player) {
+
+void isAttacking(Player *player) {
     
-    bool attack = false;
+    player->isAttacking = false;
     
     if (IsKeyDown(KEY_SPACE) || IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-
-        attack = true;
     
         if (player->last_animation == SIDE_WALK_ANIMATION || player->last_animation == SIDE_WALK_ANIMATION) {
-            current_animation = SIDE_ATTACK_ANIMATION;
+            player->last_animation
+ = SIDE_ATTACK_ANIMATION;
         
         } else if (player->last_animation == BACK_WALK_ANIMATION || player->last_animation == BACK_WALK_ANIMATION) {
-            current_animation = BACK_ATTACK_ANIMATION;
+            player->last_animation
+ = BACK_ATTACK_ANIMATION;
         
         } else if (player->last_animation == FRONT_WALK_ANIMATION || player->last_animation == FRONT_WALK_ANIMATION) {
-            current_animation = FRONT_ATTACK_ANIMATION;
+            player->last_animation
+ = FRONT_ATTACK_ANIMATION;
         }
 
-        is_attacking = true;
+        player->isAttacking = true;
 
 }
-
-    return attack;
     
 }
 
@@ -120,15 +119,15 @@ void DrawPlayer(Player *player) {
 void UpdateFrameRec(Player *player, int currentFrame) {
     
 
-    if (is_attacking) {
-        player->frameRec.y = (float)current_animation * (float)player->texture.height / 10;
-        player->frameRec.x = (float)currentFrame * (float)player->texture.width / 6;
-        is_attacking = false;
-        return;
+    if (player->isAttacking) {
+        if (currentFrame > 3)
+            currentFrame = 1;
+
     }
     
     player->frameRec.x = (float)currentFrame * (float)player->texture.width / 6;
-    player->frameRec.y = (float)current_animation * (float)player->texture.height / 10;
+    player->frameRec.y = (float)player->last_animation
+ * (float)player->texture.height / 10;
 
 
 

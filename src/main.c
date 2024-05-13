@@ -3,7 +3,6 @@
 #include "entity/player.h"
 #include "render/render.h"
 #include "utils/utils.h"
-#include "enums.h"
 
 int main(void)
 {
@@ -14,13 +13,14 @@ int main(void)
     Player *player = InitPlayer();
     Camera2D camera = InitPlayerCamera(player);
     Tile*** TileMap = CreateMap(MAP_LENGTH, __TILE_SIZE, player);
-
+    
     Music music = LoadMusicStream("res/sounds/background.mp3");
 
     PlayMusicStream(music);
 
-    static uint8_t currentFrame = 0;
-    static uint8_t framesCounter = 0;
+    static int current_frame = 0;
+    static int frame_counter = 0;
+    static float delta_time = 0;
 
     //=======================================================================================
     // Main game loop
@@ -31,42 +31,37 @@ int main(void)
     {   
         //==================================================================================
         // Update
-        //==================================================================================
-        UpdateMusicStream(music);   // Update music buffer with new stream data
-
-        float deltaTime = GetFrameTime();
-        framesCounter++;
-
-        framesCounter = (framesCounter >= (TARGET_FPS/PLAYER_FRAME_SPEED)) ? 0 : framesCounter;
-        currentFrame = (framesCounter == 0) ? ((currentFrame > 5) ? 0 : currentFrame + 1) : currentFrame;
-
-        UpdatePlayer(player, deltaTime, currentFrame);
-        UpdatePlayerCamera(&camera, player, deltaTime, SCREEN_WIDTH, SCREEN_HEIGHT);
+        //
+        delta_time = GetFrameTime();
+        frame_counter++;
+        frame_counter = (frame_counter >= (TARGET_FPS/PLAYER_FRAME_SPEED)) ? 0 : frame_counter;
+        current_frame = (frame_counter == 0) ? ((current_frame > 5) ? 0 : current_frame + 1) : current_frame;
+        //
+        UpdateMusicStream(music); 
+        UpdatePlayer(player, delta_time, current_frame);
+        UpdatePlayerCamera(&camera, player, delta_time, SCREEN_WIDTH, SCREEN_HEIGHT);
         UpdateMapCollision(player, TileMap, MAP_LENGTH, __TILE_SIZE);
-        
-
+        //
         //==================================================================================
         // Draw
-        //==================================================================================
         BeginDrawing();
             ClearBackground(BLACK);
             
             BeginMode2D(camera);
                 
                 DrawFullMap(TileMap, camera);
-                
-                //DrawTextureRec(player->texture, player->frameRec, player->position, WHITE);
-
+    
                 DrawPlayer(player);                
-                DrawCircleGradient(player->position.x, player->position.y, PLAYER_TILE_VISIBILITY, Fade(BLACK, 0.1f), Fade(BLACK, 10.0f));
-
+                
+                DrawFog(camera, FOG_RADIUS);
 
             EndMode2D();
 
             ShowControls();
             GetGameInfo(player);
         EndDrawing();
-
+        //
+        //==================================================================================
     }
 
     //==================================================================================

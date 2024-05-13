@@ -79,3 +79,20 @@ unsigned long mix(unsigned long a, unsigned long b, unsigned long c)
     c=c-a;  c=c-b;  c=c^(b >> 15);
     return c;
 }
+
+void DrawFog(Camera2D camera, int radius){
+    DrawCircleGradient(camera.target.x, camera.target.y, radius, Fade(BLACK, 0.1f), Fade(BLACK, 10.0f));
+}
+
+void UpdateFrameValues(int* current_frame, int* frame_counter, float* delta_time){
+
+    float frame_time = GetFrameTime();
+    delta_time = &frame_time;
+
+    (*frame_counter)++;
+
+    *frame_counter = (*frame_counter >= (TARGET_FPS/PLAYER_FRAME_SPEED)) ? 0 : *frame_counter;
+    *current_frame = (*frame_counter == 0) ? ((*current_frame > 5) ? 0 : *current_frame + 1) : *current_frame;
+
+
+}

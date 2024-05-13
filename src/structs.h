@@ -13,9 +13,11 @@ typedef struct {
     Sound walk;
 
     int last_animation;
-    
+    int current_animation;
     int speed;
     
+    bool isMoving;
+    bool isAttacking;
 
 } Player;
 
