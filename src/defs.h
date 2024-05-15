@@ -6,6 +6,7 @@
 //
 #include "raylib.h"
 #include "raymath.h"
+#include "structs.h"
 // 
 // STANDARD LIBRARIES
 #include <stdio.h>
@@ -16,6 +17,8 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <stdint.h>
+#include <pthread.h>
+#include <stdatomic.h>                      // C11 atomic data types
 //
 //
 //
@@ -61,7 +64,7 @@
 //
 //==============================================================================
 // MAIN FUNCTIONS
-void main_loop(void);
+MapNode* menu_screen(void);
 
 
 

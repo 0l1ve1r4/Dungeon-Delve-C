@@ -9,6 +9,7 @@
         "memory": "c",
         "new": "c",
         "functional": "c",
-        "random": "c"
+        "random": "c",
+        "structs.h": "c"
     }
 }

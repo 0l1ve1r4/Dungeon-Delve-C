@@ -3,6 +3,13 @@
 
 #include "defs.h"
 
+enum { STATE_WAITING, STATE_LOADING, STATE_FINISHED };
+typedef enum {
+    MENU_START_GAME,
+    MENU_OPTIONS,
+    MENU_QUIT
+} MenuOption;
+
 typedef struct {
     
     Vector2 spawn_point;
@@ -28,14 +35,23 @@ typedef struct {
     Rectangle rect;
     Sound break_sound;
 
-
+    char* texturePath;
     bool isValid;
     bool blocking;
 
 } Tile;
 
 
+// Linked list 
+typedef struct MapNode{
 
+    int node_id;
+    int node_length;
+    
+    Tile** tiles; // Matrix    
+    struct MapNode* next;
+     
+} MapNode;
 
 
 #endif // STRUCTS_H
