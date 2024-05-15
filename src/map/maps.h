@@ -6,4 +6,6 @@
 
 MapNode* CreateMap(void);
 
+void removeDuplicatesSprites(MapNode* map);
+
 #endif // MAP_H

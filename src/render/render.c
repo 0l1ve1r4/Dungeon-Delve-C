@@ -6,12 +6,10 @@ void UpdateMapCollision(Player *player, Tile **tiles, int matrix_length, int TIL
 
     for (int X = 0; X < matrix_length; X++)
         for (int Y = 0; Y < matrix_length; Y++){
+
+            if (tiles[X][Y].blocking == false) continue;
+
             if (tiles[X][Y].isValid){
-
-                if (tiles[X][Y].blocking == false)
-                    continue;
-
-
                 if (CheckCollisionRecs(player_rect, tiles[X][Y].rect)){
                     player->position = player->last_position;
                     if (player->isAttacking) {
@@ -22,7 +20,6 @@ void UpdateMapCollision(Player *player, Tile **tiles, int matrix_length, int TIL
         }
     }
 }
-
 
 void UpdateNodesCollision(Player *player, MapNode* nodes){
 

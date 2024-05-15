@@ -17,7 +17,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <stdint.h>
-#include <pthread.h>
+#include <pthread.h>                        // POSIX threads
 #include <stdatomic.h>                      // C11 atomic data types
 //
 //
@@ -49,18 +49,9 @@
 #define DEAD_ANIMATION 9
 //
 //
-#define MAP_LENGTH 100 // SQUARE MATRIX
+#define MAP_LENGTH 50 // SQUARE MATRIX
 #define __TILE_SIZE 16
 #define RENDER_DISTANCE 13
-//
-//==============================================================================
-// TILES PATHS
-//
-#define GRASS_TILE_PATH "res/tiles/plains/grass.png"
-#define BUSH_TILE_PATH "res/tiles/plains/bush.png"
-#define ROCK1_TILE_PATH "res/tiles/plains/rock1.png"
-#define ROCK2_TILE_PATH "res/tiles/plains/rock2.png"
-#define WOOD_TILE_PATH "res/tiles/plains/wood.png"
 //
 //==============================================================================
 // MAIN FUNCTIONS
