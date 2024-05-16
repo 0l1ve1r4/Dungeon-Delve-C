@@ -1,130 +1,167 @@
 #include "defs.h"
-#include "structs.h"
-
-#include "entity/player.h"
-#include "render/render.h"
-
 #include "map/maps.h"
+#include "utils/utils.h"
 
-// Function prototypes
-static void *LoadDataThread(void *arg);
-static void DrawMenuText(const char *text, int posX, int posY, bool selected);
+// THIS CODE NEEDS TO BE REFACTORED AND CLEANED UP
 
-// Global variables
-static atomic_bool dataLoaded = false; // Data Loaded completion indicator
-static atomic_int dataProgress = 0;
 static MapNode* TileMapGraph;
+typedef enum {
+    OPTION_SINGLEPLAYER,
+    OPTION_MULTIPLAYER,
+    OPTION_OPTIONS,
+    OPTION_EXIT
+    }    MenuOption;
 
-MapNode* menu_screen(void)
-{
-    // Initialization
-    //--------------------------------------------------------------------------------------
-    pthread_t threadId = { 0 };
 
-    int state = STATE_WAITING;
-    int framesCounter = 0;
+MapNode* menu_screen(void) {
 
-    MenuOption selectedOption = MENU_START_GAME;
+    MenuOption selectedOption = OPTION_SINGLEPLAYER;
+    
+    Texture2D logo = LoadTexture("res/static/background.png");
+    Texture2D wall = LoadTexture("res/static/wall.png");
 
-    while (!WindowShouldClose()) // Main game loop
-    {
+    Sound change_option = LoadSound("res/static/change_option.mp3");
+    Sound select_option = LoadSound("res/static/select.mp3");
+    Sound lightning = LoadSound("res/static/lightning.mp3");
+
+    wall.width = __TILE_SIZE;
+    wall.height = __TILE_SIZE;
+
+    logo.width = 200;
+    logo.height = 200;
+
+    Color background_color = BACKGROUND_COLOR;
+    
+    int animFrames = 0;
+    Image fireAnim = LoadImageAnim("res/static/fire.gif", &animFrames);
+    Image rain = LoadImageAnim("res/static/rain.gif", &animFrames);
+
+    Texture2D texFireAnim = LoadTextureFromImage(fireAnim);
+    Texture2D texRain = LoadTextureFromImage(rain);
+
+    Music music = LoadMusicStream(BACKGROUND_MENU_MUSIC);
+
+    PlayMusicStream(music);
+
+    
+    uint32_t nextFrameDataOffset = 0;
+    uint8_t currentAnimFrame = 0;      
+    uint8_t frameDelay = 10;            
+    uint8_t frameCounter = 0;
+    
+    bool isRaining = false;
+    float isRainingAlpha = 0.0f;
+    
+    const char *optionsText[MAX_OPTIONS] = {"SINGLEPLAYER", "MULTIPLAYER", "OPTIONS", "EXIT"};
+
+    while (!WindowShouldClose()) {
         // Update
-        //----------------------------------------------------------------------------------
-        switch (state)
-        {
-            case STATE_WAITING:
-            {
-                if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && CheckCollisionPointRec(GetMousePosition(), (Rectangle){ 150, 170, MeasureText("Start Game", 20), 20 }))
-                {
-                    int error = pthread_create(&threadId, NULL, &LoadDataThread, NULL);
-                    if (error != 0) TraceLog(LOG_ERROR, "Error creating loading thread");
-                    else TraceLog(LOG_INFO, "Loading thread initialized successfully");
-                    state = STATE_LOADING;
-                }
-            } break;
-            case STATE_LOADING:
-            {
-                framesCounter++;
-                if (atomic_load_explicit(&dataLoaded, memory_order_relaxed))
-                {
-                    framesCounter = 0;
-                    int error = pthread_join(threadId, NULL);
-                    if (error != 0) TraceLog(LOG_ERROR, "Error joining loading thread");
-                    else TraceLog(LOG_INFO, "Loading thread terminated successfully");
-
-                    state = STATE_FINISHED;
-                }
-            } break;
-            case STATE_FINISHED:
-            {
-                if (IsKeyPressed(KEY_ENTER))
-                {
-                    // Reset everything to launch again
-                    atomic_store_explicit(&dataLoaded, false, memory_order_relaxed);
-                    atomic_store_explicit(&dataProgress, 0, memory_order_relaxed);
-                    state = STATE_WAITING;
-                }
-            } break;
-            default: break;
+        //
+        UpdateMusicStream(music);
+        
+        if (isRainingAlpha > 0.0f) {
+            isRainingAlpha -= 0.1f;
+            isRaining = true;
         }
-        //----------------------------------------------------------------------------------
+        
+        else {
+            isRaining = false;
+        }
 
+        
+        if (rand()%10000 < 1 && !isRaining && !IsSoundPlaying(lightning)) {
+            PlaySound(lightning);        
+            isRaining = true;
+            isRainingAlpha = 3.0f;
+        }
+
+        
+        frameCounter++;
+        if (frameCounter >= frameDelay) {
+            currentAnimFrame = (currentAnimFrame + 1) % animFrames;
+            nextFrameDataOffset = fireAnim.width * fireAnim.height * 4 * currentAnimFrame;
+            UpdateTexture(texFireAnim, ((unsigned char *)fireAnim.data) + nextFrameDataOffset);
+            UpdateTexture(texRain, ((unsigned char *)rain.data) + nextFrameDataOffset);
+
+
+            frameCounter = 0;
+        }
+
+    
+        if (IsKeyPressed(KEY_DOWN)) {
+            selectedOption = (selectedOption + 1) % MAX_OPTIONS;
+            PlaySound(change_option);
+
+        } else if (IsKeyPressed(KEY_UP)) {
+            selectedOption = (selectedOption - 1 + MAX_OPTIONS) % MAX_OPTIONS;
+            PlaySound(change_option);
+        }
+
+        if (IsKeyPressed(KEY_ENTER)) {
+            PlaySound(select_option);
+            switch (selectedOption) {
+                case OPTION_SINGLEPLAYER:
+                    TileMapGraph = CreateMap();
+                    return TileMapGraph;
+                    break;
+                case OPTION_MULTIPLAYER:
+                    // Implement multiplayer logic
+                    break;
+                case OPTION_OPTIONS:
+                    // Implement options logic
+                    break;
+                case OPTION_EXIT:
+                    usleep(500000); // Sleep for 0.5 second
+                    CloseWindow();
+                    break;
+            }
+        }
+        
         // Draw
-        //----------------------------------------------------------------------------------
         BeginDrawing();
+        ClearBackground(background_color);
 
-        ClearBackground(RAYWHITE);
+        int verticalCenter = (SCREEN_HEIGHT - 40 * MAX_OPTIONS) / 2;
+        int fire_y = (selectedOption - 1.3) * 60;
 
-        // Draw menu options
-        DrawMenuText("Start Game", 150, 170, selectedOption == MENU_START_GAME);
-        DrawMenuText("Options", 150, 220, selectedOption == MENU_OPTIONS);
-        DrawMenuText("Quit", 150, 270, selectedOption == MENU_QUIT);
+        DrawTexture(texRain, verticalCenter-250, 0, WHITE);
 
-        switch (state)
-        {
-            case STATE_LOADING:
-            {
-                DrawText("LOADING DATA...", 240, 330, 40, DARKBLUE);
-                TileMapGraph = CreateMap();
-            } break;
-            case STATE_FINISHED:
-            {
-                DrawRectangle(150, 320, 500, 60, LIME);
-                DrawText("DATA LOADED!", 250, 330, 40, GREEN);
-                return TileMapGraph;
-            } break;
-            default: break;
+        DrawTexture(logo, verticalCenter+240, 10, WHITE);
+        DrawTexture(texFireAnim, verticalCenter+130, verticalCenter + fire_y, WHITE);
+        DrawTexture(texFireAnim, verticalCenter+480, verticalCenter + fire_y, WHITE);
+
+        
+        DrawCircleGradient(verticalCenter+300, 500, 1000, Fade(WHITE, 0.f), Fade(WHITE, isRainingAlpha));
+        
+        
+        for (int i = SCREEN_HEIGHT/ 2 + 310; i < SCREEN_HEIGHT; i += __TILE_SIZE)
+            for (int j = 0; j < SCREEN_WIDTH; j += __TILE_SIZE)
+                DrawTexture(wall, j, i, WHITE);        
+        
+
+        // Draw menu options with rectangles
+        for (int i = 0; i < MAX_OPTIONS; i++) {
+            Vector2 rectPos = {SCREEN_WIDTH / 2 - 200, verticalCenter + 60 * i};
+            Rectangle optionRect = {rectPos.x, rectPos.y, 400, 40};
+            if (i == selectedOption) {
+                DrawRectangleRec(optionRect, RED);
+                DrawText(optionsText[i], optionRect.x + 10, optionRect.y + 10, 30, WHITE);
+                
+
+            } else {
+                DrawRectangleRec(optionRect, ColorFromNormalized((Vector4){0.44f, 0.44f, 0.44f, 1.0f}));
+                DrawText(optionsText[i], optionRect.x + 10, optionRect.y + 10, 30, WHITE);
+            }
         }
 
-        DrawRectangleLines(150, 320, 500, 60, DARKGRAY);
+
+        DrawCircleGradient(verticalCenter+300, 0, 1000, Fade(background_color, 0.f), Fade(background_color, 10.0f));    
 
         EndDrawing();
-        //----------------------------------------------------------------------------------
     }
 
-    return NULL;
+    CloseWindow();
+
+    return 0;
 }
 
-static void *LoadDataThread(void *arg)
-{
-    // Simulate data loading (10 seconds)
-    for (int i = 0; i <= 100; i++)
-    {
-        atomic_store_explicit(&dataProgress, i, memory_order_relaxed);
-        
-        // Simulate loading time
-        for (int delay = 0; delay < 10000000; delay++) {}
-    }
-
-    // When data has finished loading, we set global variable
-    atomic_store_explicit(&dataLoaded, true, memory_order_relaxed);
-
-    return NULL;
-}
-
-// Draw menu text with optional highlight
-static void DrawMenuText(const char *text, int posX, int posY, bool selected)
-{
-    if (selected) DrawText(text, posX, posY, 20, RED);
-    else DrawText(text, posX, posY, 20, DARKGRAY);
-}

@@ -11,7 +11,7 @@ Player* InitPlayer(void){
 
     player->texture = LoadTexture("res/characters/player.png");
     player->frameRec = (Rectangle){0.0f, 0.0f, (float)player->texture.width/6, (float)player->texture.height/10};
-    player->walk = LoadSound("res/sounds/walk.mp3");
+    player->walk = LoadSound("res/sounds/");
 
     player->last_animation = FRONT_WALK_ANIMATION;
     player->speed = PLAYER_SPEED;
@@ -119,7 +119,7 @@ void DrawPlayer(Player *player) {
 
 
     DrawTexturePro(player->texture, player->frameRec, playerRec, playerOrigin, 0, WHITE);
-    DrawRectangleLines(player->position.x, player->position.y, __TILE_SIZE+1, __TILE_SIZE+1, RED);
+    //DrawRectangleLines(player->position.x, player->position.y, __TILE_SIZE+1, __TILE_SIZE+1, RED);
 }
 
 void UpdateFrameRec(Player *player, int currentFrame) {

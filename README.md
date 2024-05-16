@@ -2,6 +2,7 @@
 
 - Dungeon Delve C is 2D game crafted in C, by the Raylib library. Engineered with versatility in mind, it is designed to seamlessly run on any operating system, catering to both high-end and low-end hardware configurations. 
 
+<img src="res/readme/game.gif" alt="Window" align="center">
 <img src="res/readme/game.png" alt="Window" align="center">
 
 - Immerse yourself in a thrilling adventure where players navigate through dynamic environments teeming with challenging obstacles, promising an engaging and immersive gaming experience for all.
@@ -19,17 +20,18 @@ To compile and run the game, execute the `run.sh` script provided in the reposit
 ```sh
 ├── LICENSE
 ├── README.md
+└── res/ **Game images and sounds**
 └── src/
     ├── main.c                  
     ├── defs.h                  
-    ├── structs.h                
+    ├── structs.h
+    ├── menu.c
+    ├── 
     └── entity/
-        ├── player.c
-        ├── skeleton.c **(TODO)** 
+    └── map/
     └── render/
-        ├── camera.c
-        ├── render.c
-    └── res/ *(Images and sounds)*
+    └── utils/
+    
 ```
 
 # Contributing

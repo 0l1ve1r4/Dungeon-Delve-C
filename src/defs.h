@@ -26,6 +26,12 @@
 #define SCREEN_HEIGHT 650
 #define SCREEN_TITLE "Dungeon Delve C"
 #define TARGET_FPS 120
+//==============================================================================
+// MENU DEFINITIONS
+//
+#define BACKGROUND_COLOR {1, 1, 26, 255}
+#define BACKGROUND_MENU_MUSIC "res/sounds/menu_background.mp3"
+#define MAX_OPTIONS 4
 //
 //==============================================================================
 // Player definitions
@@ -56,7 +62,5 @@
 //==============================================================================
 // MAIN FUNCTIONS
 MapNode* menu_screen(void);
-
-
 
 #endif

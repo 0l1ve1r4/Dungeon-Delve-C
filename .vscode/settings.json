@@ -10,6 +10,7 @@
         "new": "c",
         "functional": "c",
         "random": "c",
-        "structs.h": "c"
+        "structs.h": "c",
+        "stdatomic.h": "c"
     }
 }
