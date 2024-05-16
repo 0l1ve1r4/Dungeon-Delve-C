@@ -1,11 +1,16 @@
 #ifndef MAPS_H
 #define MAPS_H
 
-#include "nodes.h"
-#include "tiles.h"
+#include "../defs.h"
+#include "../structs.h"
 
-MapNode* CreateMap(void);
+Vector2** SetTilePosition(int matrix_length, int tile_size);
+MapNode* InitMap(int map_size);
 
-void removeDuplicatesSprites(MapNode* map);
+void generateMap(MapNode* TileMap);
+void generateWalls(MapNode* TileMap);
+void generateBorders(MapNode* TileMap);
+void printMap(int** map, int WIDTH, int HEIGHT);
+
 
 #endif // MAP_H

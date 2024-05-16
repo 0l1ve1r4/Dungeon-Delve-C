@@ -1,72 +1,53 @@
 #include "maps.h"
 
-MapNode* CreateMap(void){
 
-    Tile** grass = CreateTileMap(GRASS_BREAK, GRASS_TILE_PATH, GRASS_SPAWN, GRASS_TILE_SOUND);
-    Tile** bush = CreateTileMap(BUSH_BREAK, BUSH_TILE_PATH, BUSH_SPAWN, BUSH_TILE_SOUND);
-    Tile** rock1 = CreateTileMap(ROCK1_BREAK, ROCK1_TILE_PATH, ROCK1_SPAWN, ROCK1_TILE_SOUND);
-    Tile** rock2 = CreateTileMap(ROCK2_BREAK, ROCK2_TILE_PATH, ROCK2_SPAWN, ROCK2_TILE_SOUND);
-    Tile** wood = CreateTileMap(WOOD_BREAK, WOOD_TILE_PATH, WOOD_SPAWN, WOOD_TILE_SOUND);
+Vector2** SetTilePosition(int matrix_length, int tile_size){
 
-    MapNode* nodes = createNode(grass, 0, MAP_LENGTH);
-    insertNode(nodes, bush, 1, MAP_LENGTH);
-    insertNode(nodes, rock1, 2, MAP_LENGTH);
-    insertNode(nodes, rock2, 3, MAP_LENGTH);
-    insertNode(nodes, wood, 4, MAP_LENGTH);
-
-    removeDuplicatesSprites(nodes);
-
-    return nodes;
+    Vector2** TilesPositions = (Vector2**)malloc(sizeof(Vector2*) * matrix_length);
+    for (int X = 0; X < matrix_length; X++) 
+        TilesPositions[X] = (Vector2*)malloc(sizeof(Vector2) * matrix_length);
+    
+    for (int Y = 0; Y < matrix_length; Y++)
+        for (int X = 0; X < matrix_length; X++)
+            TilesPositions[Y][X] = (Vector2){X * tile_size, Y * tile_size};
+        
+    return TilesPositions;
 
 }
 
-void removeDuplicatesSprites(MapNode* map){
+MapNode* InitMap(int map_lenght){
 
-    MapNode* current = map->next; // Skip the first node (floor tiles)
-    MapNode* next = current->next;
-    
-    
-    uint16_t spawn_x = map->node_length / 2;
-    uint16_t spawn_y = map->node_length / 2;
+    int** mapMatrix = (int**)malloc(map_lenght * sizeof(int*));
+    Tile** tileMatrix = (Tile**)malloc(map_lenght * sizeof(Tile*));
 
-
-
-    while(next != NULL){
-
-        current->tiles[spawn_x][spawn_y].isValid = false;
-
-        for (int i = 0; i < map->node_length; i++)
-            for (int j = 0; j < map->node_length; j++)
-                if (current->tiles[i][j].isValid && next->tiles[i][j].isValid)
-                    next->tiles[i][j].isValid = false;
-                            
-    current = current->next;
-    next = current->next;
-    
+    for (int i = 0; i < map_lenght; i++){
+        mapMatrix[i] = (int*)malloc(map_lenght * sizeof(int));
+        tileMatrix[i] = (Tile*)malloc(map_lenght * sizeof(Tile));
     }
 
-    return;
+    MapNode* TileMap = (MapNode*)malloc(sizeof(MapNode));
+    
+    TileMap->node_id = 0;
+    TileMap->matrix = mapMatrix;
+    TileMap->matrix_width = map_lenght;
+    TileMap->matrix_height = map_lenght;
+    TileMap->positions = SetTilePosition(map_lenght, __TILE_SIZE);
+    TileMap->tile_info = tileMatrix;
+
+    for (int Y = 0; Y < map_lenght; Y++){
+        for (int X = 0; X < map_lenght; X++){
+            int pos_x = TileMap->positions[Y][X].x;
+            int pos_y = TileMap->positions[Y][X].y;
+            
+            Rectangle rect = (Rectangle){pos_x, pos_y, __TILE_SIZE, __TILE_SIZE};
+            TileMap->tile_info[Y][X].rect = rect;
+
+        }
+    }
+
+    generateMap(TileMap);
+
+
+    return TileMap;
 
 }
-
-/*
-Tile*** remove_duplicates(Tile*** TileMaps, int matrix_length, uint8_t num_objects, Player *player){
-    
-    uint16_t spawn_x = player->spawn_point.x / __TILE_SIZE;
-    uint16_t spawn_y = player->spawn_point.y / __TILE_SIZE;
-
-    for (int i = 0; i < matrix_length; i++)
-        for (int j = 0; j < matrix_length; j++)
-            for (int k = 0; k < num_objects - 1; k++){
-                if (TileMaps[k][spawn_x][spawn_y].isValid){
-                    TileMaps[k][spawn_x][spawn_y].isValid = false; // Avoid collision in the spawn point
-                }
-                
-                if (TileMaps[k][i][j].isValid)
-                    for (int l = k + 1; l < num_objects; l++)
-                        if (TileMaps[l][i][j].isValid){
-                            TileMaps[l][i][j].isValid = false;
-                        }
-            }
-    return TileMaps;
-}*/

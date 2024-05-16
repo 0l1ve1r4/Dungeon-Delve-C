@@ -59,9 +59,14 @@ void GetGameInfo(Player* player){
 
 }
 
-void InitRandomSeed(void){
-    unsigned long seed = mix(clock(), time(NULL), getpid());
-    srand(seed);
+void InitRandomSeed(void* value){
+    if (value == NULL){
+        unsigned long seed = mix(clock(), time(NULL), getpid());
+        srand(seed);
+        return;
+    }
+
+    srand((unsigned long)value);
 }
 
 // Robert Jenkins' 96 bit Mix Function
@@ -81,7 +86,7 @@ unsigned long mix(unsigned long a, unsigned long b, unsigned long c)
 }
 
 void DrawFog(Camera2D camera, int radius){
-    DrawCircleGradient(camera.target.x, camera.target.y, radius, Fade(BLACK, 0.1f), Fade(BLACK, 10.0f));
+    DrawCircleGradient(camera.target.x, camera.target.y, radius, Fade(BLACK, 0.6f), Fade(BLACK, 10.0f));
 }
 
 void UpdateFrameValues(int* current_frame, int* frame_counter, float* delta_time){

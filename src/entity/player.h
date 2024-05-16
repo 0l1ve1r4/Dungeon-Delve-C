@@ -5,7 +5,7 @@
 #include "../structs.h"
 
 
-Player* InitPlayer(void);
+Player* InitPlayer(MapNode *Map);
 
 
 void isMoving(Player *player, float deltaTime, int currentFrame);

@@ -9,7 +9,7 @@ void debug_log(char *message, char* escape_code);
 // GAME INFO - FUNCTIONS //
 void GetGameInfo(Player* player);
 void ShowControls(void);
-void InitRandomSeed(void);
+void InitRandomSeed(void* value);
 void DrawFog(Camera2D camera, int radius);
 void UpdateFrameValues(int* current_frame, int* frame_counter, float* delta_time);
 

@@ -23,14 +23,10 @@ typedef struct {
 
 typedef struct {
     
-    Vector2 position;   // Position of the tile (x, y)
-    Texture2D texture;    
     Rectangle rect;
-    Sound break_sound;
-
-    char* texturePath;
-    bool isValid;
     bool blocking;
+    bool isBreakable;
+
 
 } Tile;
 
@@ -39,11 +35,15 @@ typedef struct {
 typedef struct MapNode{
 
     int node_id;
-    int node_length;
+    int matrix_width;
+    int matrix_height;
     
-    Tile** tiles; // Matrix    
-    struct MapNode* next;
-     
+    int** matrix;
+
+    Vector2** positions;
+    Tile** tile_info;
+    Texture2D* textures;
+
 } MapNode;
 
 

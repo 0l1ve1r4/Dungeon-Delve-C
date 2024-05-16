@@ -11,6 +11,8 @@
         "functional": "c",
         "random": "c",
         "structs.h": "c",
-        "stdatomic.h": "c"
+        "stdatomic.h": "c",
+        "map": "c",
+        "menu.h": "c"
     }
 }

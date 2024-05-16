@@ -1,9 +1,13 @@
 #include "player.h"
 
 
-Player* InitPlayer(void){
+Player* InitPlayer(MapNode *Map){
     Player* player = (Player*)malloc(sizeof(Player));
-    Vector2 spawn_point = (Vector2){MAP_LENGTH/2 * __TILE_SIZE, MAP_LENGTH/2 * __TILE_SIZE};
+
+    int spawn_x = (Map->matrix_height * __TILE_SIZE)/2;
+    int spawn_y = (Map->matrix_height * __TILE_SIZE)/2;
+
+    Vector2 spawn_point = (Vector2){spawn_x, spawn_y};
 
     player->spawn_point = spawn_point;
     player->position = spawn_point;

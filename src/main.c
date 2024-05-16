@@ -12,11 +12,12 @@ int main(void)
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE);
     SetTargetFPS(TARGET_FPS);
     InitAudioDevice();             
-    InitRandomSeed();
+    InitRandomSeed(NULL);
 
     MapNode* TileMapGraph = menu_screen();
+    Color bgColor = BLACK;
 
-    Player *player = InitPlayer();
+    Player *player = InitPlayer(TileMapGraph);
     Camera2D camera = InitPlayerCamera(player);
     
     Music music = LoadMusicStream("res/sounds/background.mp3");
@@ -45,17 +46,17 @@ int main(void)
 
 
         UpdatePlayerCamera(&camera, player, delta_time, SCREEN_WIDTH, SCREEN_HEIGHT);
-        UpdateNodesCollision(player, TileMapGraph); 
+        UpdateMapCollision(player, TileMapGraph);
 
         //
         //==================================================================================
         // Draw
         BeginDrawing();
-            ClearBackground(BLACK);
+            ClearBackground(bgColor);
             
             BeginMode2D(camera);
                     
-                RenderMapNodes(TileMapGraph, camera);
+                RenderMap(TileMapGraph, camera);
 
                 DrawPlayer(player);                
                 

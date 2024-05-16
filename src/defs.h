@@ -22,16 +22,13 @@
 //
 //
 //
+#define GAME_VERSION "VERSION: 0.1.0"
 #define SCREEN_WIDTH 1200
 #define SCREEN_HEIGHT 650
 #define SCREEN_TITLE "Dungeon Delve C"
 #define TARGET_FPS 120
 //==============================================================================
 // MENU DEFINITIONS
-//
-#define BACKGROUND_COLOR {1, 1, 26, 255}
-#define BACKGROUND_MENU_MUSIC "res/sounds/menu_background.mp3"
-#define MAX_OPTIONS 4
 //
 //==============================================================================
 // Player definitions
@@ -55,7 +52,6 @@
 #define DEAD_ANIMATION 9
 //
 //
-#define MAP_LENGTH 50 // SQUARE MATRIX
 #define __TILE_SIZE 16
 #define RENDER_DISTANCE 13
 //

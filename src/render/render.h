@@ -5,12 +5,9 @@
 #include "../structs.h"
 #include "../utils/utils.h"
 
-void UpdateMapCollision(Player *player, Tile **tiles, int matrix_length, int TILE_SIZE);
-void DrawTileMap(Tile **tiles, Camera2D camera);
 
-void UpdateNodesCollision(Player *player, MapNode* nodes);
-void RenderMapNodes(MapNode* nodes, Camera2D camera);
-
+void RenderMap(MapNode* nodes, Camera2D camera);
+void UpdateMapCollision(Player *player, MapNode *map);
 
 // CAMERA RELATED - FUNCTIONS //
 Camera2D InitPlayerCamera(Player *player);
