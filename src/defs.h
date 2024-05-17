@@ -1,3 +1,19 @@
+// This file is part of DungeonDelveC.
+// Copyright (C) 2024 Guilherme Oliveira Santos
+
+// DungeonDelveC is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 #ifndef DEFS_H
 #define DEFS_H
 
@@ -14,46 +30,16 @@
 #include <string.h>
 #include <time.h>
 #include <stdbool.h>    
-#include <sys/types.h>
 #include <unistd.h>
 #include <stdint.h>
-#include <pthread.h>                        // POSIX threads
-#include <stdatomic.h>                      // C11 atomic data types
-//
-//
 //
 #define GAME_VERSION "VERSION: 0.1.0"
 #define SCREEN_WIDTH 1200
 #define SCREEN_HEIGHT 650
 #define SCREEN_TITLE "Dungeon Delve C"
 #define TARGET_FPS 120
-//==============================================================================
-// MENU DEFINITIONS
-//
-//==============================================================================
-// Player definitions
-//
-#define FOG_RADIUS  200   
-#define PLAYER_SPEED 100.0f
-#define PLAYER_FRAME_SPEED 10
-//
-#define FRONT_IDLE_ANIMATION 0
-#define SIDE_IDLE_ANIMATION 1
-#define BACK_IDLE_ANIMATION 2
-//
-#define FRONT_WALK_ANIMATION 3
-#define SIDE_WALK_ANIMATION 4
-#define BACK_WALK_ANIMATION 5
-//
-#define FRONT_ATTACK_ANIMATION 6
-#define SIDE_ATTACK_ANIMATION 7
-#define BACK_ATTACK_ANIMATION 8
-//
-#define DEAD_ANIMATION 9
-//
-//
 #define __TILE_SIZE 16
-#define RENDER_DISTANCE 13
+#define FOG_RADIUS  200
 //
 //==============================================================================
 // MAIN FUNCTIONS

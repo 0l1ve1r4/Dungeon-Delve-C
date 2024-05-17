@@ -1,3 +1,19 @@
+// This file is part of DungeonDelveC.
+// Copyright (C) 2024 Guilherme Oliveira Santos
+
+// DungeonDelveC is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 #ifndef MENU_H
 #define MENU_H
 
@@ -6,6 +22,8 @@
 #include "utils/utils.h"
 
 #define BACKGROUND_COLOR {1, 1, 26, 255}
+#define MAP_MAX_SIZE 500
+#define MAX_SEED 99999999
 
 #define LOGO_PATH "res/static/background.png"
 #define WALL_PATH "res/static/wall.png"
@@ -37,6 +55,7 @@ void UpdateOptions(MenuOption* selectedOptionPtr, Sound change_option, Sound sel
 // Draws
 
 void DrawBackground(Texture2D logo, Texture2D wall, Texture2D texFireAnim, Texture2D texRain, int selectedOption);
+void DrawOption(const char *text, Rectangle optionRect, Color color);
 void DrawAllOptions(int selectedOption);
 void DrawWorldSettings(int selectedOption);
 void startSinglePlayer(void);

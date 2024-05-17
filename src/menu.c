@@ -1,9 +1,25 @@
+// This file is part of DungeonDelveC.
+// Copyright (C) 2024 Guilherme Oliveira Santos
+
+// DungeonDelveC is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 #include "menu.h"
 
 static bool world_settings = false;
 static bool isRaining = false;
 static int MAP_SIZE = 100;
-static int MAP_SEED = 0;
+static int MAP_SEED = 29072022;
 static int verticalCenter = (SCREEN_HEIGHT - 40 * MAX_OPTIONS) / 2;
 static float isRainingAlpha = 0.0f;
 static MapNode* TileMapGraph = NULL;
@@ -43,7 +59,6 @@ MapNode* menu_screen(void) {
 
     PlayMusicStream(music);
 
-    
     while (!WindowShouldClose()) {  
         //==============================================================================
         // Update
@@ -77,7 +92,7 @@ MapNode* menu_screen(void) {
         //
         // Check what part of the menu to draw
         if (world_settings) DrawWorldSettings(selectedOption);
-        else if (!world_settings) DrawAllOptions(verticalCenter);
+        else if (!world_settings) DrawAllOptions(selectedOption);
         //
         // Draw fog
         DrawCircleGradient(verticalCenter+300, 0, 1000, Fade(background_color, 0.f), Fade(background_color, 10.0f));    
@@ -134,14 +149,11 @@ void UpdateOptions(MenuOption* selectedOptionPtr, Sound change_option, Sound sel
             PlaySound(select_option);
             switch (selectedOption) {
                 case 0:
-                    if (MAP_SIZE < 500)
-                    MAP_SIZE += 50;
-                    else MAP_SIZE = 50;
-
+                    MAP_SIZE += MAP_SIZE >= MAP_MAX_SIZE ? -MAP_MAX_SIZE : 50;
                     break;
                 
                 case 1:
-                    MAP_SEED = rand() % 1000000000;
+                    MAP_SEED = rand() % MAX_SEED;
                     break;
                 
                 case 2:
@@ -194,50 +206,36 @@ void DrawBackground(Texture2D logo, Texture2D wall, Texture2D texFireAnim, Textu
 
 }
 
-void DrawAllOptions(int selectedOption){
-    
-    for (int i = 0; i < MAX_OPTIONS; i++) {
+void DrawOption(const char *text, Rectangle optionRect, Color color) {
+    DrawRectangleRec(optionRect, color);
+    DrawText(text, optionRect.x + 10, optionRect.y + 10, 30, WHITE);
+}
 
+void DrawAllOptions(int selectedOption){
+    for (int i = 0; i < MAX_OPTIONS; i++) {
         Vector2 rectPos = {SCREEN_WIDTH / 2 - 200, verticalCenter + 60 * i};
         Rectangle optionRect = {rectPos.x, rectPos.y, 400, 40};
-            
-        if (i == selectedOption) {
-            DrawRectangleRec(optionRect, RED);
-            DrawText(defaultOptions[i], optionRect.x + 10, optionRect.y + 10, 30, WHITE);
-        } 
-            
-        else {
-            DrawRectangleRec(optionRect, ColorFromNormalized((Vector4){0.44f, 0.44f, 0.44f, 1.0f}));
-            DrawText(defaultOptions[i], optionRect.x + 10, optionRect.y + 10, 30, WHITE);
-        }
+
+        Color color = i == selectedOption ? RED : ColorFromNormalized((Vector4){0.44f, 0.44f, 0.44f, 1.0f});
+        DrawOption(defaultOptions[i], optionRect, color);
     }
 }
 
 void DrawWorldSettings(int selectedOption){
+    char option_1[20], option_2[20];
+    sprintf(option_1, "MAP SIZE: %i", MAP_SIZE);
+    sprintf(option_2, "MAP SEED: %i", MAP_SEED);
 
-        char* option_1 = malloc(20);
-        sprintf(option_1, "MAP SIZE: %i", MAP_SIZE);
-        char* option_2 = malloc(20);
-        sprintf(option_2, "MAP SEED: %i", MAP_SEED);
+    const char *drawWorldOptions[MAX_OPTIONS] = {option_1, option_2, "BACK", "START GAME"};
 
+    for (int i = 0; i < MAX_OPTIONS; i++) {
+        Vector2 rectPos = {SCREEN_WIDTH / 2 - 200, verticalCenter + 60 * i};
+        Rectangle optionRect = {rectPos.x, rectPos.y, 400, 40};
 
-        const char *drawWorldOptions[MAX_OPTIONS] = {option_1, option_2, "BACK", "START GAME"};
-
-        for (int i = 0; i < MAX_OPTIONS; i++) {
-            Vector2 rectPos = {SCREEN_WIDTH / 2 - 200, verticalCenter + 60 * i};
-            Rectangle optionRect = {rectPos.x, rectPos.y, 400, 40};
-            if (i == selectedOption) {
-                DrawRectangleRec(optionRect, RED);
-                DrawText(drawWorldOptions[i], optionRect.x + 10, optionRect.y + 10, 30, WHITE);
-                
-
-            } else {
-                DrawRectangleRec(optionRect, ColorFromNormalized((Vector4){0.44f, 0.44f, 0.44f, 1.0f}));
-                DrawText(drawWorldOptions[i], optionRect.x + 10, optionRect.y + 10, 30, WHITE);
-            }
-        }
+        Color color = i == selectedOption ? RED : ColorFromNormalized((Vector4){0.44f, 0.44f, 0.44f, 1.0f});
+        DrawOption(drawWorldOptions[i], optionRect, color);
+    }
 }
-
 void startSinglePlayer(void){
     InitRandomSeed((void*)MAP_SEED);
     TileMapGraph = InitMap(MAP_SIZE);
