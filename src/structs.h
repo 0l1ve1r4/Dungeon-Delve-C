@@ -21,6 +21,10 @@
 
 typedef struct {
     
+    float health;             // Health of the player
+    float stamina;            // Stamina of the player
+    float mana;               // Mana of the player
+
     Vector2 spawn_point;    // Spawn point of the player (Used to remove collision with the player)
     Vector2 position;       // Position of the current loop of the player
     Vector2 last_position;  // Used to store the last position of the player for collision detection
@@ -32,7 +36,7 @@ typedef struct {
 
     int last_animation;     // Last animation of the player
     int current_animation;  // Current animation of the player
-    int speed;              // Speed of the player
+    int speed;              // Speed of the current loop of the player
     
     bool isMoving;          // Boolean to check if the player is moving
     bool isAttacking;       // Boolean to check if the player is attacking

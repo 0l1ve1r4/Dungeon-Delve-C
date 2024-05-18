@@ -131,11 +131,14 @@ void InitBorders(MapNode* TileMap) {
         TileMap->matrix[i][0] = WALL_LEFT;
         TileMap->matrix[i][TileMap->matrix_width - 1] = WALL_RIGHT;
         TileMap->tile_info[i][0].isBreakable = false;
+        TileMap->tile_info[i][TileMap->matrix_width - 1].blocking = true;
 
     } for (int j = 0; j < TileMap->matrix_width; j++) {
         TileMap->matrix[0][j] = WALL_MID;
         TileMap->matrix[TileMap->matrix_height - 1][j] = WALL_MID;
         TileMap->tile_info[0][j].isBreakable = false;
+        TileMap->tile_info[TileMap->matrix_height - 1][j].blocking = true;
+    
     }
 }
 

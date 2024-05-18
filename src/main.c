@@ -19,15 +19,19 @@
 
 #include "entity/player.h"
 #include "render/render.h"
+#include "render/ui/ui.h"
 
 int main(void)
 {    
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE);
     SetTargetFPS(TARGET_FPS);
+    
     InitAudioDevice();             
     InitRandomSeed(NULL);
+    InitUi();
 
     MapNode* TileMapGraph = menu_screen();
+
     Color bgColor = BLACK;
 
     Player *player = InitPlayer(TileMapGraph);
@@ -72,6 +76,8 @@ int main(void)
                 RenderMap(TileMapGraph, camera);
 
                 DrawPlayer(player);                
+                
+                DrawUi(player, camera);
                 
                 DrawFog(camera, FOG_RADIUS);
 

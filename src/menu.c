@@ -188,11 +188,9 @@ void DrawBackground(Texture2D logo, Texture2D wall, Texture2D texFireAnim, Textu
 
         ClearBackground((Color)BACKGROUND_COLOR);
 
-        
         int fire_y = (selectedOption - 1.3) * 60;
 
         DrawTexture(texRain, verticalCenter-250, 0, WHITE);
-
         DrawTexture(logo, verticalCenter+240, 10, WHITE);
         DrawTexture(texFireAnim, verticalCenter+130, verticalCenter + fire_y, WHITE);
         DrawTexture(texFireAnim, verticalCenter+480, verticalCenter + fire_y, WHITE);
@@ -207,6 +205,15 @@ void DrawBackground(Texture2D logo, Texture2D wall, Texture2D texFireAnim, Textu
 }
 
 void DrawOption(const char *text, Rectangle optionRect, Color color) {
+
+    Color background_rect_color = BLACK;
+    Rectangle background_rect = {optionRect.x - 2, optionRect.y - 2, optionRect.width + 5, optionRect.height + 5};
+    
+    if (color.r == RED.r && color.g == RED.g && color.b == RED.b && color.a == RED.a) //3,57,108
+        background_rect_color = ColorFromNormalized((Vector4){3.0f, 0.57f, 0.108f, 1.0f});
+
+
+    DrawRectangleRec(background_rect, background_rect_color);
     DrawRectangleRec(optionRect, color);
     DrawText(text, optionRect.x + 10, optionRect.y + 10, 30, WHITE);
 }
@@ -215,6 +222,7 @@ void DrawAllOptions(int selectedOption){
     for (int i = 0; i < MAX_OPTIONS; i++) {
         Vector2 rectPos = {SCREEN_WIDTH / 2 - 200, verticalCenter + 60 * i};
         Rectangle optionRect = {rectPos.x, rectPos.y, 400, 40};
+        
 
         Color color = i == selectedOption ? RED : ColorFromNormalized((Vector4){0.44f, 0.44f, 0.44f, 1.0f});
         DrawOption(defaultOptions[i], optionRect, color);

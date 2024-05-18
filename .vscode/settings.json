@@ -13,6 +13,7 @@
         "structs.h": "c",
         "stdatomic.h": "c",
         "map": "c",
-        "menu.h": "c"
+        "menu.h": "c",
+        "UI.C": "cpp"
     }
 }

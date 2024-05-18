@@ -19,6 +19,10 @@
 Player* InitPlayer(MapNode *Map){
     Player* player = (Player*)malloc(sizeof(Player));
 
+    player->health = PLAYER_BASE_HEALTH;
+    player->stamina = PLAYER_BASE_STAMINA;
+    player->mana = PLAYER_BASE_MANA; 
+
     int spawn_x = (Map->matrix_height * __TILE_SIZE)/2;
     int spawn_y = (Map->matrix_height * __TILE_SIZE)/2;
 
@@ -77,10 +81,11 @@ void isMoving(Player *player, float deltaTime, int currentFrame) {
         updatePlayerPosition(player, player->speed * deltaTime, 0, SIDE_WALK_ANIMATION);
         if (player->texture.width < 0) player->texture.width *= -1;
     } 
-    else if (IsKeyDown(KEY_UP) || IsKeyDown(KEY_W)) {
+
+    if (IsKeyDown(KEY_UP) || IsKeyDown(KEY_W)) {
         updatePlayerPosition(player, 0, -player->speed * deltaTime, BACK_WALK_ANIMATION);
     } 
-    else if (IsKeyDown(KEY_DOWN) || IsKeyDown(KEY_S)) {
+    if (IsKeyDown(KEY_DOWN) || IsKeyDown(KEY_S)) {
         updatePlayerPosition(player, 0, player->speed * deltaTime, FRONT_WALK_ANIMATION);
     }
 
@@ -110,7 +115,7 @@ void isAttacking(Player *player) {
 
 void DrawPlayer(Player *player) { // this is buggy
     Rectangle playerRec = (Rectangle){player->position.x, player->position.y, PLAYER_SIZE, PLAYER_SIZE};
-    Vector2 playerOrigin = (Vector2){9, 14};
+    Vector2 playerOrigin = (Vector2){12, 18};
     DrawTexturePro(player->texture, player->frameRec, playerRec, playerOrigin, 0, WHITE);
 
 }

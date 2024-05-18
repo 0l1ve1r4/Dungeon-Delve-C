@@ -2,7 +2,7 @@
 
 - Dungeon Delve C is 2D game crafted in C, by the Raylib library. Engineered with versatility in mind, it is designed to seamlessly run on any operating system, catering to both high-end and low-end hardware configurations. 
 
-<img src="res/readme/game.gif" alt="Window" align="center">
+<img src="res/readme/game.png" alt="Window" align="center">
 
 - Immerse yourself in a thrilling adventure where players navigate through dynamic environments teeming with challenging obstacles, promising an engaging and immersive gaming experience for all.
 

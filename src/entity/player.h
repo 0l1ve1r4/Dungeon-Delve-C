@@ -20,6 +20,10 @@
 #include "../defs.h"
 #include "../structs.h"
 
+#define PLAYER_BASE_HEALTH 3.5
+#define PLAYER_BASE_STAMINA 3
+#define PLAYER_BASE_MANA 3
+
 #define PLAYER_SPRITESHEET "res/characters/player.png"
 #define PLAYER_WALK_1_SOUND "res/sounds/walk.wav"
 #define PLAYER_WALK_2_SOUND "res/sounds/walk2.wav"
