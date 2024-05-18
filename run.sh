@@ -73,7 +73,7 @@ if [ "$INSTALL" == "install" ]; then
 
 fi
 
-if [ "$OS" == "linux" ]; then
+if [[ "$OS" == "linux" && "$INSTALL" == "install" ]]; then # This is just to easy the testing process
     echo "Running..."
-    ../build/DungeonDelveC
+    ../build/DungeonDelveC 
 fi

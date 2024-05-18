@@ -10,27 +10,32 @@
 
 To compile and run the game, execute the `run.sh` script provided in the repository. Ensure that you have the necessary dependencies installed, including the Raylib library.
 
+### Linux
+
+
 ```bash
-./run.sh
+./run.sh linux              # compilation only
+./run.sh linux install      # compilation and build creation
+```
+
+### Windows
+
+```bash
+./run.sh win                # compilation only
+./run.sh win install        # compilation and build creation
 ```
 
 # Structure
 
 ```sh
+├── CONTRIBUTING.md         # Contribuiting rules
+├── .gitignore
 ├── LICENSE
 ├── README.md
-└── res/ **Game images and sounds**
-└── src/
-    ├── main.c                  
-    ├── defs.h                  
-    ├── structs.h
-    ├── menu.c
-    ├── 
-    └── entity/
-    └── map/
-    └── render/
-    └── utils/
-    
+├── lib/                    # raylib.dll for windows compilations
+├── res/                    # Game images and sounds
+├── src/                    # source code
+├── run.sh                  # main compilation file    
 ```
 
 # Contributing
