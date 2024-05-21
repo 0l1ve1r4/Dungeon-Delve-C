@@ -18,8 +18,9 @@
 #include "structs.h"
 
 #include "entity/player.h"
+#include "entity/enemy.h"
 #include "render/render.h"
-#include "render/ui/ui.h"
+
 
 int main(void)
 {    
@@ -28,7 +29,6 @@ int main(void)
     
     InitAudioDevice();             
     InitRandomSeed(NULL);
-    InitUi();
 
     MapNode* TileMapGraph = menu_screen();
 
@@ -61,6 +61,9 @@ int main(void)
         UpdateMusicStream(music); 
         UpdatePlayer(player, delta_time, current_frame);
 
+        
+
+        UpdateEnemiesMap(TileMapGraph, delta_time, current_frame, player);
 
         UpdatePlayerCamera(&camera, player, delta_time, SCREEN_WIDTH, SCREEN_HEIGHT);
         UpdateMapCollision(player, TileMapGraph);
@@ -75,10 +78,10 @@ int main(void)
                     
                 RenderMap(TileMapGraph, camera);
 
+                DrawEnemyMap(TileMapGraph);
+
                 DrawPlayer(player);                
-                
-                DrawUi(player, camera);
-                
+
                 DrawFog(camera, FOG_RADIUS);
 
             EndMode2D();

@@ -47,7 +47,7 @@ void RenderMap(MapNode* nodes, Camera2D camera){
 
 void UpdateMapCollision(Player *player, MapNode *map){
 
-    Rectangle player_rect = (Rectangle){player->position.x, player->position.y, 8, 10};
+    Rectangle player_rect = (Rectangle){player->entity.position.x, player->entity.position.y, 8, 10};
 
     for (int X = 0; X < map->matrix_height; X++){
         for (int Y = 0; Y < map->matrix_width; Y++){
@@ -56,7 +56,7 @@ void UpdateMapCollision(Player *player, MapNode *map){
     
 
             else if (CheckCollisionRecs(player_rect, map->tile_info[X][Y].rect)){             
-                player->position = player->last_position;
+                player->entity.position = player->entity.last_position;
             
             }
         }

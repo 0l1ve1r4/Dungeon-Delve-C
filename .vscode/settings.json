@@ -14,6 +14,7 @@
         "stdatomic.h": "c",
         "map": "c",
         "menu.h": "c",
-        "UI.C": "cpp"
+        "UI.C": "cpp",
+        "entity.h": "c"
     }
 }

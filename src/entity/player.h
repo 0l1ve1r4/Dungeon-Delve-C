@@ -17,19 +17,19 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include "../defs.h"
-#include "../structs.h"
+#include "entity.h"
 
 #define PLAYER_BASE_HEALTH 3.5
 #define PLAYER_BASE_STAMINA 3
 #define PLAYER_BASE_MANA 3
+#define PLAYER_BASE_DAMAGE 1
 
 #define PLAYER_SPRITESHEET "res/characters/player.png"
 #define PLAYER_WALK_1_SOUND "res/sounds/walk.wav"
 #define PLAYER_WALK_2_SOUND "res/sounds/walk2.wav"
 //
 #define PLAYER_SPEED 100.0f
-#define PLAYER_FRAME_SPEED 10
+#define PLAYER_FRAME_SPEED 20
 //
 #define FRONT_IDLE_ANIMATION 0
 #define SIDE_IDLE_ANIMATION 1
@@ -53,13 +53,13 @@
 
 Player* InitPlayer(MapNode *Map);
 
-void isMoving(Player *player, float deltaTime, int currentFrame);
+void isEnemyMoving(Player *player, float deltaTime, int currentFrame);
 void isAttacking(Player *player);
 void updatePlayerPosition(Player *player, float deltaX, float deltaY, int animation);
 
 void DrawPlayer(Player *player);
 void UpdatePlayer(Player *player, float deltaTime, int currentFrame);
-void UpdateFrameRec(Player *player, int currentFrame);
+void UpdateEnemyFrameRec(Player *player, int currentFrame);
 void PlayIdleAnimation(Player *player, int currentFrame);
 
 #endif // PLAYER_H

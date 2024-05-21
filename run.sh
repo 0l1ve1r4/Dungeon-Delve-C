@@ -12,7 +12,6 @@ SOURCES=(                                   # Source files
     "src/render/*.c"                        # recompiling all files every time
     "src/map/*.c"                           #
     "src/utils/*.c"                         #
-    "src/render/ui/*.c"                     #      
 )
 
 

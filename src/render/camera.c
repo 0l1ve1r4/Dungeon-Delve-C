@@ -18,7 +18,7 @@
 
 Camera2D InitPlayerCamera(Player *player){
     Camera2D camera = { 0 };
-    camera.target = player->position;
+    camera.target = player->entity.position;
     camera.offset = (Vector2){ SCREEN_WIDTH/2.0f, SCREEN_HEIGHT/2.0f };
     camera.rotation = 0.0f;
     camera.zoom = 4.0f;
@@ -45,7 +45,7 @@ void UpdatePlayerCamera(Camera2D *camera, Player *player, float delta, int width
     }
 
     camera->offset = (Vector2){ width/2.0f, height/2.0f };
-    Vector2 diff = Vector2Subtract(player->position, camera->target);
+    Vector2 diff = Vector2Subtract(player->entity.position, camera->target);
     float length = Vector2Length(diff);
     
     if (length > minEffectLength)

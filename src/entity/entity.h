@@ -14,12 +14,17 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef UI_H
-#define UI_H
+#ifndef ENTITY_H
+#define ENTITY_H
 
-#include "../render.h"
+#include "../defs.h"
+#include "../structs.h"
 
-void InitUi(void);
-void DrawUi(Player *player, Camera2D camera);
+#define HEALTH_BAR_HEIGHT 2
 
-#endif // UI_H
+Entity InitEntity(Vector2 spawn, float health, float stamina, float mana, int damage, float speed);
+void DrawEntityHealthBar(Entity entity_type, int entity_health, int entity_max_health);
+void UpdateEntityPosition(Entity *entity, float deltaX, float deltaY);
+
+
+#endif // ENTITY_H

@@ -17,6 +17,7 @@
 #include "maps.h"
 #include "noise.h"
 #include "tiles.h"
+#include "../entity/enemy.h"
 
 // function header in tiles.h
 Texture2D* InitTiles(void){
@@ -39,6 +40,24 @@ void GenerateMap(MapNode* TileMap) {
     ClearSpawnPoint(TileMap);
     InitObjects(TileMap);
     InitBorders(TileMap);
+
+    
+
+    TileMap->num_enemies =  TileMap->matrix_width / 20;
+    TileMap->enemies = malloc(sizeof(Enemy*) * TileMap->num_enemies );
+
+    unsigned int rand_x;
+    unsigned int rand_y;
+
+    for (int i = 0; i < TileMap->num_enemies ; i++) {
+        rand_x = rand() % TileMap->matrix_width;
+        rand_y = rand() % TileMap->matrix_height;
+
+        TileMap->enemies[i] = (Enemy*)InitEnemy(rand_x, rand_y);
+    }
+
+    
+
 
     return;
 }

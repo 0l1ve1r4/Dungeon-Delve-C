@@ -52,10 +52,10 @@ void ShowControls(void)
     if (IsKeyPressed(KEY_C)) show = !show;
     if (!show) return;
 
-    DrawText("Controls | 'C' to close:", 20, 20, 10, BLACK);
-    DrawText("Move - W | A | S | D ", 40, 40, 10, DARKGRAY);
-    DrawText("Attack - Left Click ", 40, 60, 10, DARKGRAY);
-    DrawText("Interact - Right Click ", 40, 80, 10, DARKGRAY);
+    DrawText("Controls | 'C' to close:", 20, 20, 10, WHITE);
+    DrawText("Move - W | A | S | D ", 40, 40, 10, WHITE);
+    DrawText("Attack - SPACE", 40, 60, 10, WHITE);
+    DrawText("Interact - E ", 40, 80, 10, WHITE);
 }
 
 void GetGameInfo(Player* player){
@@ -63,14 +63,14 @@ void GetGameInfo(Player* player){
     char* info_text = (char*)malloc(50 * sizeof(char));
 
     int frames_per_second = GetFPS();
-    int player_x = player->position.x;
-    int player_y = player->position.y;
+    int player_x = player->entity.position.x;
+    int player_y = player->entity.position.y;
 
-    sprintf(info_text, "| FPS: %i | X: %i Y: %i |", frames_per_second, player_x / __TILE_SIZE, player_y / __TILE_SIZE);
+    sprintf(info_text, "| FPS: %i", frames_per_second);
     
-    float right_corner = (float)SCREEN_WIDTH/10 * 6;
+    float right_corner = (float)SCREEN_WIDTH/10 * 7;
 
-    DrawText(info_text, right_corner, 0, 15, WHITE);
+    DrawText(info_text, right_corner, 0, 20, WHITE);
     
 
 }

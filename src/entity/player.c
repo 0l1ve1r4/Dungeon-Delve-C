@@ -19,16 +19,12 @@
 Player* InitPlayer(MapNode *Map){
     Player* player = (Player*)malloc(sizeof(Player));
 
-    player->health = PLAYER_BASE_HEALTH;
-    player->stamina = PLAYER_BASE_STAMINA;
-    player->mana = PLAYER_BASE_MANA; 
-
     int spawn_x = (Map->matrix_height * __TILE_SIZE)/2;
     int spawn_y = (Map->matrix_height * __TILE_SIZE)/2;
+    Vector2 playerSpawn = (Vector2){spawn_x, spawn_y};
 
-    player->spawn_point = (Vector2){spawn_x, spawn_y};;
-    player->position = player->spawn_point;
-    player->last_position = player->spawn_point;
+    player->entity = InitEntity(playerSpawn, PLAYER_BASE_HEALTH, PLAYER_BASE_STAMINA, 
+    PLAYER_BASE_MANA, PLAYER_BASE_DAMAGE, PLAYER_SPEED);
 
     player->texture = LoadTexture(PLAYER_SPRITESHEET);
     player->frameRec = (Rectangle){0, 0, (float)player->texture.width/6, (float)player->texture.height/10};
@@ -37,10 +33,10 @@ Player* InitPlayer(MapNode *Map){
     player->walk_2 = LoadSound(PLAYER_WALK_2_SOUND);
 
     player->last_animation = FRONT_WALK_ANIMATION;
-    player->speed = PLAYER_SPEED;
 
-    player->isMoving = false;
-    player->isAttacking = false;
+
+    player->entity.isMoving = false;
+    player->entity.isAttacking = false;
     
     return player;
 }
@@ -48,55 +44,53 @@ Player* InitPlayer(MapNode *Map){
 
 void UpdatePlayer(Player *player, float deltaTime, int currentFrame) {
 
-    player->last_position = player->position;
+    player->entity.last_position = player->entity.position;
 
-    isMoving(player, deltaTime, currentFrame);
+    isEnemyMoving(player, deltaTime, currentFrame);
     isAttacking(player);
 
-    if (!player->isMoving && !player->isAttacking) {
+    if (!player->entity.isMoving && !player->entity.isAttacking) {
         PlayIdleAnimation(player, currentFrame);
         return; 
     }
                 
-    UpdateFrameRec(player, currentFrame);
+    UpdateEnemyFrameRec(player, currentFrame);
     player->last_animation = player->last_animation;
 
 }
 
 void updatePlayerPosition(Player *player, float deltaX, float deltaY, int animation) {
-    player->position.x += deltaX;
-    player->position.y += deltaY;
+    player->entity.position.x += deltaX;
+    player->entity.position.y += deltaY;
     player->last_animation = animation;
-    player->isMoving = true;
+    player->entity.isMoving = true;
 }
 
-void isMoving(Player *player, float deltaTime, int currentFrame) {
-    player->isMoving = false;
+void isEnemyMoving(Player *player, float deltaTime, int currentFrame) {
+    player->entity.isMoving = false;
 
     if (IsKeyDown(KEY_LEFT) || IsKeyDown(KEY_A)) {
-        updatePlayerPosition(player, -player->speed * deltaTime, 0, SIDE_WALK_ANIMATION);
+        updatePlayerPosition(player, -player->entity.speed * deltaTime, 0, SIDE_WALK_ANIMATION);
         if (player->texture.width > 0) player->texture.width *= -1;
     } 
     else if (IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_D)) {
-        updatePlayerPosition(player, player->speed * deltaTime, 0, SIDE_WALK_ANIMATION);
+        updatePlayerPosition(player, player->entity.speed * deltaTime, 0, SIDE_WALK_ANIMATION);
         if (player->texture.width < 0) player->texture.width *= -1;
     } 
 
     if (IsKeyDown(KEY_UP) || IsKeyDown(KEY_W)) {
-        updatePlayerPosition(player, 0, -player->speed * deltaTime, BACK_WALK_ANIMATION);
+        updatePlayerPosition(player, 0, -player->entity.speed * deltaTime, BACK_WALK_ANIMATION);
     } 
     if (IsKeyDown(KEY_DOWN) || IsKeyDown(KEY_S)) {
-        updatePlayerPosition(player, 0, player->speed * deltaTime, FRONT_WALK_ANIMATION);
+        updatePlayerPosition(player, 0, player->entity.speed * deltaTime, FRONT_WALK_ANIMATION);
     }
 
-    if (player->isMoving && !IsSoundPlaying(player->walk_1) && !IsSoundPlaying(player->walk_2)) {
+    if (player->entity.isMoving && !IsSoundPlaying(player->walk_1) && !IsSoundPlaying(player->walk_2)) {
         rand() % 2 == 0 ? PlaySound(player->walk_1) : PlaySound(player->walk_2);
     }
 }
 
 void isAttacking(Player *player) {
-    player->isAttacking = false;
-
     if (IsKeyDown(KEY_SPACE) || IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
         switch (player->last_animation) {
             case SIDE_WALK_ANIMATION:
@@ -109,22 +103,28 @@ void isAttacking(Player *player) {
                 player->last_animation = FRONT_ATTACK_ANIMATION;
                 break;
         }
-        player->isAttacking = true;
+        player->entity.isAttacking = true;
     }
+
+    else player->entity.isAttacking = false;
+
+
 }
 
-void DrawPlayer(Player *player) { // this is buggy
-    Rectangle playerRec = (Rectangle){player->position.x, player->position.y, PLAYER_SIZE, PLAYER_SIZE};
+void DrawPlayer(Player *player) { 
+    Rectangle playerRec = (Rectangle){player->entity.position.x, player->entity.position.y, PLAYER_SIZE, PLAYER_SIZE};
     Vector2 playerOrigin = (Vector2){12, 18};
+
+    DrawEntityHealthBar(player->entity, player->entity.health, PLAYER_BASE_HEALTH);
     DrawTexturePro(player->texture, player->frameRec, playerRec, playerOrigin, 0, WHITE);
 
 }
 
-void UpdateFrameRec(Player *player, int currentFrame) {
-    if (player->isAttacking) {
-        if (currentFrame > 3)
-            player->isAttacking = false;
-            currentFrame = 1; }
+void UpdateEnemyFrameRec(Player *player, int currentFrame) {
+    if (player->entity.isAttacking) {
+        if (currentFrame >= 3)
+            return;
+        }
                                     
 
     player->frameRec.x = (float)currentFrame * (float)player->texture.width / 6;

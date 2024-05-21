@@ -19,50 +19,55 @@
 
 #include "defs.h"
 
-typedef struct {
-    
-    float health;             // Health of the player
-    float stamina;            // Stamina of the player
-    float mana;               // Mana of the player
+typedef struct {   
+    Vector2 spawn_point;   
+    Vector2 position;       
+    Vector2 last_position;  
+    float health;             
+    float stamina;
+    float mana;
+    int damage;
+    int speed;
+    bool isAlive;
+    bool isAttacking;
+    bool isMoving;  
+} Entity;
 
-    Vector2 spawn_point;    // Spawn point of the player (Used to remove collision with the player)
-    Vector2 position;       // Position of the current loop of the player
-    Vector2 last_position;  // Used to store the last position of the player for collision detection
+typedef struct 
+{
+    Entity entity;          // Entity struct to store the enemy information
+    Texture2D texture;      // Texture to represent the enemy
+    Rectangle frameRec;     // Sprite frame rectangle (Used to animate the enemy)
+    bool isMoving;          // Boolean to check if the enemy is moving
+    bool isAttacking;       // Boolean to check if the enemy is attacking
+} Enemy;
+
+typedef struct {
+    Entity entity;          // Entity struct to store the player information
     Texture2D texture;      // Texture to represent the player
     Rectangle frameRec;     // Sprite frame rectangle (Used to animate the player)
-    
     Sound walk_1;           // Sound of the player walking
     Sound walk_2;           // Sound of the player walking
-
     int last_animation;     // Last animation of the player
     int current_animation;  // Current animation of the player
-    int speed;              // Speed of the current loop of the player
-    
-    bool isMoving;          // Boolean to check if the player is moving
-    bool isAttacking;       // Boolean to check if the player is attacking
-
 } Player;
 
 typedef struct {
-    
     Rectangle rect;         // Rectangle of the tile (Used for collision detection)
     bool blocking;          // Used to check if the tile can block entities
     bool isBreakable;       // Used to check if the tile can be broken
-
-
 } Tile;
 
 typedef struct MapNode{
-
+    Tile** tile_info;       // Tile info is used to store the tile information (blocking, breakable, etc.)
+    Vector2** positions;    // Positions of the each tile in the map, calculated with: (x * tile_size, y * tile_size)
+    Texture2D* textures;    // Textures of the tiles
     int node_id;            // ID of the node, will be used in the future to identify new maps when the player uses a stair  
     int matrix_width;       // Width of the matrix
-    int matrix_height;      // Height of the matrix 
-                            // The height and width are the same because the map is a square
+    int matrix_height;      // The height and width are the same because the map is a square
     int** matrix;           // Matrix is used to store the map layout (0:void, (1-8): floor, (9-11): wall, etc.)
-
-    Vector2** positions;    // Positions of the each tile in the map, calculated with: (x * tile_size, y * tile_size)
-    Tile** tile_info;       // Tile info is used to store the tile information (blocking, breakable, etc.)
-    Texture2D* textures;    // Textures of the tiles
+    int num_enemies;        // Number of enemies in the map
+    Enemy** enemies;         // Array of enemies in the map
 
 } MapNode;
 
