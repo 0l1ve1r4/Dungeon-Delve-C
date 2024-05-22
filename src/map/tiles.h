@@ -39,7 +39,7 @@ enum TileType {
     WALL_BANNER,
 
     
-    TILE_TYPE_COUNT //Insert before TILE_TYPE_COUNT
+    TILE_TYPE_COUNT //Insert before this
 
 };
 

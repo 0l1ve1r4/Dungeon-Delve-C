@@ -16,9 +16,17 @@
 
 #include "entity.h"
 
-Entity InitEntity(Vector2 spawn, float health, float stamina, float mana, int damage, float speed){
+Entity InitEntity(Vector2 spawn, float health, float stamina, float mana, int damage, float speed,
+char* texture_path, int texture_width, int texture_height, char* damage_sound_path, char* death_sound_path){
 
     Entity entity;
+    entity.texture = LoadTexture(texture_path);
+    entity.frameRec = (Rectangle){0, 0, 0, 0};
+    entity.frameRec.width = entity.texture.width/texture_width;
+    entity.frameRec.height = entity.texture.height/texture_height;
+    entity.take_damage_sound = LoadSound(damage_sound_path);
+    entity.death_sound = LoadSound(death_sound_path);
+
     entity.spawn_point = spawn;
     entity.position = spawn;
     entity.last_position = spawn;
@@ -28,15 +36,23 @@ Entity InitEntity(Vector2 spawn, float health, float stamina, float mana, int da
     entity.damage = damage;
     entity.speed = speed;
     entity.isAlive = true;
+    entity.isAttacking = false;
+    entity.isMoving = false;
 
     return entity;
 
 }
 
-void DrawEntityHealthBar(Entity entity_type, int entity_health, int entity_max_health){
+void isEntityAlive(Entity* entity){
+    if (entity->health <= 0){
+        entity->isAlive = false;
+        PlaySound(entity->death_sound);
+    }
+}
 
+void DrawEntityHealthBar(Entity entity_type, int entity_health, int entity_max_health){
     unsigned int HealBar_Y = entity_type.position.y - 10;
-    unsigned int HealthBar_X = entity_type.position.x - (entity_max_health) / __TILE_SIZE / entity_max_health;
+    unsigned int HealthBar_X = entity_type.position.x - (entity_max_health);
 
     unsigned int HealthBarHeight = HEALTH_BAR_HEIGHT;
     unsigned int HealthBarWidth = entity_max_health * __TILE_SIZE / entity_max_health;
@@ -47,11 +63,29 @@ void DrawEntityHealthBar(Entity entity_type, int entity_health, int entity_max_h
 
     DrawRectangleRec(healthBar, BLACK);
     DrawRectangleRec(fullHealthBar, GREEN);
-
 }
 
 void UpdateEntityPosition(Entity *entity, float deltaX, float deltaY){
-    entity->position.x += deltaX * entity->speed;
-    entity->position.y += deltaY * entity->speed;
+    entity->position.x += deltaX;
+    entity->position.y += deltaY;
     entity->isMoving = true;
+}
+
+void UpdateEntityFrameRec(Entity *entity, int currentFrame_x, int currentFrame_y,
+                int spriteSheetWidth, int spriteSheetHeight){  
+                                
+    entity->frameRec.x = (float)currentFrame_x * (float)entity->texture.width / spriteSheetWidth;
+    entity->frameRec.y = (float)currentFrame_y * (float)entity->texture.height / spriteSheetHeight;
+}
+
+void DrawEntity(Entity entity, int entity_size, int entity_origin_x, int entity_origin_y, int base_health){
+
+    Rectangle entityRec = (Rectangle){entity.position.x, entity.position.y, entity_size, entity_size};
+    Vector2 entityOrigin = (Vector2){entity_origin_x, entity_origin_y};
+
+    DrawEntityHealthBar(entity, entity.health, base_health);
+    DrawTexturePro(entity.texture, entity.frameRec, entityRec, entityOrigin, 0, WHITE);
+
+    DrawRectangleLines(entityRec.x, entityRec.y, entity_size/2, entity_size/2, RED);
+
 }

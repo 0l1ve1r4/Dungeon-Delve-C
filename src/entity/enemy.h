@@ -23,9 +23,12 @@
 #define ENEMY_BASE_HEALTH 5
 #define ENEMY_BASE_STAMINA 3
 #define ENEMY_BASE_MANA 3
-#define ENEMY_BASE_SPEED 5
+#define ENEMY_BASE_SPEED 20
 #define ENEMY_BASE_DAMAGE 1
-#define ENEMY_SPRITESHEET "res/characters/ghosts.png"
+#define ENEMY_SIZE (__TILE_SIZE * 4)
+#define ENEMY_SPRITESHEET "res/characters/Flight.png"
+#define ENEMY_SPRITESHEET_WIDTH 8
+#define ENEMY_SPRITESHEET_HEIGHT 1
 
 Enemy* InitEnemy(int spawn_x, int spawn_y);
 void UpdateEnemiesMap(MapNode *TileMap, float deltaTime, int currentFrame, Player* player) ;

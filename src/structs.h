@@ -19,10 +19,14 @@
 
 #include "defs.h"
 
-typedef struct {   
+typedef struct {
+    Texture2D texture;      // Texture to represent the player
+    Rectangle frameRec;     // Sprite frame rectangle (Used to animate the player)   
     Vector2 spawn_point;   
     Vector2 position;       
     Vector2 last_position;  
+    Sound take_damage_sound;
+    Sound death_sound;
     float health;             
     float stamina;
     float mana;
@@ -36,18 +40,15 @@ typedef struct {
 typedef struct 
 {
     Entity entity;          // Entity struct to store the enemy information
-    Texture2D texture;      // Texture to represent the enemy
-    Rectangle frameRec;     // Sprite frame rectangle (Used to animate the enemy)
+    int current_y_frame;    // Current frame of the enemy
     bool isMoving;          // Boolean to check if the enemy is moving
-    bool isAttacking;       // Boolean to check if the enemy is attacking
+    bool isAttacking;       // Boolean to check if the enemy is attacki
 } Enemy;
 
 typedef struct {
     Entity entity;          // Entity struct to store the player information
-    Texture2D texture;      // Texture to represent the player
-    Rectangle frameRec;     // Sprite frame rectangle (Used to animate the player)
-    Sound walk_1;           // Sound of the player walking
-    Sound walk_2;           // Sound of the player walking
+    Sound* walk_sounds;     // Vector of the player walking
+    Sound attack_sound;          // Sound of the player attacking
     int last_animation;     // Last animation of the player
     int current_animation;  // Current animation of the player
 } Player;

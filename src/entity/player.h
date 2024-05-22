@@ -13,20 +13,20 @@
 
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
+//
 #ifndef PLAYER_H
 #define PLAYER_H
-
+//
 #include "entity.h"
-
+//
 #define PLAYER_BASE_HEALTH 3.5
 #define PLAYER_BASE_STAMINA 3
 #define PLAYER_BASE_MANA 3
 #define PLAYER_BASE_DAMAGE 1
-
+//
 #define PLAYER_SPRITESHEET "res/characters/player.png"
-#define PLAYER_WALK_1_SOUND "res/sounds/walk.wav"
-#define PLAYER_WALK_2_SOUND "res/sounds/walk2.wav"
+#define PLAYER_SPRITESHEET_WIDTH 6
+#define PLAYER_SPRITESHEET_HEIGHT 10
 //
 #define PLAYER_SPEED 100.0f
 #define PLAYER_FRAME_SPEED 20
@@ -45,15 +45,12 @@
 //
 #define DEAD_ANIMATION 9
 //
-//
 #define RENDER_DISTANCE 13
-//
-
 #define PLAYER_SIZE (__TILE_SIZE * 2)
 
 Player* InitPlayer(MapNode *Map);
 
-void isEnemyMoving(Player *player, float deltaTime, int currentFrame);
+void isPlayerMoving(Player *player, float deltaTime, int currentFrame);
 void isAttacking(Player *player);
 void updatePlayerPosition(Player *player, float deltaX, float deltaY, int animation);
 

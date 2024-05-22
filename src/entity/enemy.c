@@ -16,7 +16,6 @@
 
 #include "enemy.h"
 
-
 static float last_time_attacked = 0;
 static float last_collision_time = 0;
 
@@ -26,21 +25,21 @@ Enemy* InitEnemy(int spawn_x, int spawn_y){
     
     Vector2 spawn = (Vector2){spawn_x, spawn_y};
 
-    enemy->entity = InitEntity(spawn, ENEMY_BASE_HEALTH,
-    ENEMY_BASE_STAMINA, ENEMY_BASE_MANA,
-    ENEMY_BASE_DAMAGE, ENEMY_BASE_SPEED
-    
+    enemy->entity = InitEntity(spawn, 
+    ENEMY_BASE_HEALTH,
+    ENEMY_BASE_STAMINA,
+    ENEMY_BASE_MANA,
+    ENEMY_BASE_DAMAGE, 
+    ENEMY_BASE_SPEED,
+    ENEMY_SPRITESHEET,
+    ENEMY_SPRITESHEET_WIDTH, 
+    ENEMY_SPRITESHEET_HEIGHT,
+    "res/sounds/global/hit.wav",
+    "res/sounds/global/death.wav"
+
     );
 
-    enemy->texture = LoadTexture(ENEMY_SPRITESHEET);
-    enemy->texture.width *= -1;
-    int rand_ghost_x = rand() % 5;
-    int rand_ghost_y = rand() % 2;
-
-
-    enemy->frameRec = (Rectangle){0, 0, enemy->texture.width/5, enemy->texture.height/2};
-    enemy->frameRec.x = (float)rand_ghost_x * (float)enemy->texture.width / 5;
-    enemy->frameRec.y = (float)rand_ghost_y * (float)enemy->texture.height / 2;
+    enemy->current_y_frame = 0;
     enemy->isMoving = false;
     enemy->isAttacking = false;
 
@@ -58,14 +57,28 @@ void UpdateEnemiesMap(MapNode *TileMap, float deltaTime, int currentFrame, Playe
 }
 
 void UpdateEnemy(Enemy *enemy, Player* player, float deltaTime, int currentFrame) {
+    
+    if (!enemy->entity.isAlive) return;
+    
+    if (enemy->entity.health < 0){ 
+        enemy->current_y_frame = 1;
+        PlaySound(enemy->entity.death_sound); }
 
-    if (enemy->entity.isAlive == false) return;
+    
+    if (enemy->entity.health < 0 && currentFrame >= 6){
+        enemy->entity.isAlive = false;
+        UnloadTexture(enemy->entity.texture);
+        return;
+    }
 
     enemy->entity.last_position = enemy->entity.position;
 
     isMoving(enemy, player, deltaTime, currentFrame);
 
-    if (!enemy->isMoving) return; 
+    if (!enemy->isMoving) return;
+
+
+    UpdateEntityFrameRec(&enemy->entity, currentFrame, enemy->current_y_frame, ENEMY_SPRITESHEET_WIDTH, ENEMY_SPRITESHEET_HEIGHT); 
     
 }
 
@@ -74,8 +87,6 @@ void updatePlayerHealth(Player* player) {
     if (time - last_time_attacked < 1) return;
 
     last_time_attacked = time;
-
-
 
     if (player->entity.health <= 0) {
         if (player->entity.health < 0) player->entity.health = 0;
@@ -87,6 +98,8 @@ void updatePlayerHealth(Player* player) {
 
 
     player->entity.health -= 1;
+    PlaySound(player->entity.take_damage_sound);
+    
 }
 
 void throwEnemyBack(Enemy *enemy, float deltaTime, int directionX, int directionY) {
@@ -104,6 +117,7 @@ void handleCollision(Enemy *enemy, Player* player, float deltaTime, int directio
         if (player->entity.isAttacking){
             throwEnemyBack(enemy, deltaTime, directionX, directionY);
             enemy->entity.health -= 1;
+            PlaySound(enemy->entity.take_damage_sound);
         }
 
         else{
@@ -116,50 +130,43 @@ void handleCollision(Enemy *enemy, Player* player, float deltaTime, int directio
 }
 
 void isMoving(Enemy *enemy, Player* player, float deltaTime, int currentFrame) {
-    enemy->isMoving = false;
+    enemy->isMoving = true;
 
-    if (enemy->entity.position.x < player->entity.position.x) {
+    bool LEFT = enemy->entity.position.x < player->entity.position.x;
+    bool RIGHT = enemy->entity.position.x > player->entity.position.x;
+    bool UP = enemy->entity.position.y < player->entity.position.y;
+    bool DOWN = enemy->entity.position.y > player->entity.position.y;
+
+    enemy->entity.texture.width < 0 && LEFT ? enemy->entity.texture.width *= -1 : 0;
+    enemy->entity.texture.width > 0 && RIGHT ? enemy->entity.texture.width *= -1 : 0;
+
+    if (LEFT || RIGHT || UP || DOWN) enemy->isMoving = true;
+    else enemy->isMoving = false;
+
+    if (LEFT){
         UpdateEntityPosition(&enemy->entity, enemy->entity.speed * deltaTime, 0);
         handleCollision(enemy, player, deltaTime, -1, 0);
-    } 
-    else if (enemy->entity.position.x > player->entity.position.x) {
+    }
+
+    if (RIGHT){
         UpdateEntityPosition(&enemy->entity, -enemy->entity.speed * deltaTime, 0);
         handleCollision(enemy, player, deltaTime, 1, 0);
     }
 
-    if (enemy->entity.position.y < player->entity.position.y) {
+    if (UP){
         UpdateEntityPosition(&enemy->entity, 0, enemy->entity.speed * deltaTime);
         handleCollision(enemy, player, deltaTime, 0, -1);
-    } 
-    else if (enemy->entity.position.y > player->entity.position.y) {
+    }
+
+    if (DOWN){
         UpdateEntityPosition(&enemy->entity, 0, -enemy->entity.speed * deltaTime);
         handleCollision(enemy, player, deltaTime, 0, 1);
     }
+
 }
 
 void DrawEnemyMap(MapNode *TileMap) {
     for (int i = 0; i < TileMap->num_enemies ; i++) {
-        DrawEnemy(TileMap->enemies[i]);
+        DrawEntity(TileMap->enemies[i]->entity, ENEMY_SIZE, 5, 10, ENEMY_BASE_HEALTH);
     }
-}
-
-void DrawEnemy(Enemy *enemy) { // this is buggy
-
-    if (enemy->entity.health <= 0){ 
-        if (enemy->entity.isAlive == false) {
-            return;
-        } else {
-            enemy->entity.isAlive = false;
-        }
-        UnloadTexture(enemy->texture);
-    return;
-
-    }
-
-    Rectangle destRec = (Rectangle){enemy->entity.position.x, enemy->entity.position.y, 12, __TILE_SIZE};
-    Vector2 origin = (Vector2){1, 10};
-
-    DrawEntityHealthBar(enemy->entity, enemy->entity.health, ENEMY_BASE_HEALTH);
-    DrawTexturePro(enemy->texture, enemy->frameRec, destRec, origin, 0, WHITE);
-
 }

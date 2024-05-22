@@ -24,12 +24,9 @@ Texture2D* InitTiles(void){
 
     Texture2D* textures = malloc(sizeof(Texture2D) * TILE_TYPE_COUNT);
     
-    for (int i = 0; i < TILE_TYPE_COUNT; i++) {
-        textures[i] = LoadTexture(TilePaths[i]);
-    }
-
+    for (int i = 0; i < TILE_TYPE_COUNT; i++) textures[i] = LoadTexture(TilePaths[i]);
+    
     return textures;
-
 }
 
 void GenerateMap(MapNode* TileMap) {
@@ -56,7 +53,7 @@ void GenerateMap(MapNode* TileMap) {
         TileMap->enemies[i] = (Enemy*)InitEnemy(rand_x, rand_y);
     }
 
-    
+    TileMap->enemies[0] = (Enemy*)InitEnemy(50, 50);
 
 
     return;

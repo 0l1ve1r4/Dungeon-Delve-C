@@ -47,6 +47,9 @@ MapNode* menu_screen(void) {
     Sound select_option = LoadSound(SELECT_OPTION_SOUND);
     Sound lightning = LoadSound(LIGHTNING_SOUND);
 
+    SetSoundVolume(change_option, 0.1f);
+    SetSoundVolume(select_option, 0.1f);
+
     Color background_color = BACKGROUND_COLOR;
     
     Image fireAnim = LoadImageAnim(FIRE_ANIM_PATH, &animFrames);
@@ -56,6 +59,7 @@ MapNode* menu_screen(void) {
     Texture2D texRain = LoadTextureFromImage(rain);
 
     Music music = LoadMusicStream(BACKGROUND_MENU_MUSIC);
+    SetMusicVolume(music, 0.5f);
 
     PlayMusicStream(music);
 

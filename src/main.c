@@ -55,13 +55,11 @@ int main(void)
         //
         delta_time = GetFrameTime();
         frame_counter++;
-        frame_counter = (frame_counter >= (TARGET_FPS/PLAYER_FRAME_SPEED)) ? 0 : frame_counter;
+        frame_counter = (frame_counter >= (TARGET_FPS/GLOBAL_FRAME_SPEED)) ? 0 : frame_counter;
         current_frame = (frame_counter == 0) ? ((current_frame > 5) ? 0 : current_frame + 1) : current_frame;
         //
         UpdateMusicStream(music); 
         UpdatePlayer(player, delta_time, current_frame);
-
-        
 
         UpdateEnemiesMap(TileMapGraph, delta_time, current_frame, player);
 

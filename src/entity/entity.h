@@ -22,9 +22,15 @@
 
 #define HEALTH_BAR_HEIGHT 2
 
-Entity InitEntity(Vector2 spawn, float health, float stamina, float mana, int damage, float speed);
+Entity InitEntity(Vector2 spawn, float health, float stamina, float mana, int damage, float speed,
+char* texture_path, int texture_width, int texture_height, char* damage_sound_path, char* death_sound_path);
+
+void isEntityAlive(Entity* entity);
 void DrawEntityHealthBar(Entity entity_type, int entity_health, int entity_max_health);
 void UpdateEntityPosition(Entity *entity, float deltaX, float deltaY);
+void UpdateEntityFrameRec(Entity *entity, int currentFrame_x, int currentFrame_y, int spriteSheetWidth, int spriteSheetHeight);
+void DrawEntity(Entity entity, int entity_size, int entity_origin_x, int entity_origin_y, int base_health);
+
 
 
 #endif // ENTITY_H

@@ -15,38 +15,43 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "player.h"
+#include "paths.h"
 
 Player* InitPlayer(MapNode *Map){
     Player* player = (Player*)malloc(sizeof(Player));
 
     int spawn_x = (Map->matrix_height * __TILE_SIZE)/2;
     int spawn_y = (Map->matrix_height * __TILE_SIZE)/2;
-    Vector2 playerSpawn = (Vector2){spawn_x, spawn_y};
+    Vector2 PLAYER_SPAWN = (Vector2){spawn_x, spawn_y};
 
-    player->entity = InitEntity(playerSpawn, PLAYER_BASE_HEALTH, PLAYER_BASE_STAMINA, 
-    PLAYER_BASE_MANA, PLAYER_BASE_DAMAGE, PLAYER_SPEED);
-
-    player->texture = LoadTexture(PLAYER_SPRITESHEET);
-    player->frameRec = (Rectangle){0, 0, (float)player->texture.width/6, (float)player->texture.height/10};
+    player->entity = InitEntity(
+    PLAYER_SPAWN, 
+    PLAYER_BASE_HEALTH, 
+    PLAYER_BASE_STAMINA, 
+    PLAYER_BASE_MANA, 
+    PLAYER_BASE_DAMAGE, 
+    PLAYER_SPEED,
+    PLAYER_SPRITESHEET,
+    PLAYER_SPRITESHEET_WIDTH, 
+    PLAYER_SPRITESHEET_HEIGHT,
+    "res/sounds/global/hit.wav",
+    "res/sounds/global/death.wav"
     
-    player->walk_1 = LoadSound(PLAYER_WALK_1_SOUND);
-    player->walk_2 = LoadSound(PLAYER_WALK_2_SOUND);
+    );
 
+    player->walk_sounds = (Sound*)malloc(sizeof(Sound) * COUNT_WALK_SOUNDS);
+    for (int i = 0; i < COUNT_WALK_SOUNDS; i++) player->walk_sounds[i] = LoadSound(PlayerSoundPaths[i]);
+    
+    player->attack_sound = LoadSound(PlayerSoundPaths[ATTACK_1]);
     player->last_animation = FRONT_WALK_ANIMATION;
-
-
-    player->entity.isMoving = false;
-    player->entity.isAttacking = false;
     
     return player;
 }
 
-
 void UpdatePlayer(Player *player, float deltaTime, int currentFrame) {
-
     player->entity.last_position = player->entity.position;
 
-    isEnemyMoving(player, deltaTime, currentFrame);
+    isPlayerMoving(player, deltaTime, currentFrame);
     isAttacking(player);
 
     if (!player->entity.isMoving && !player->entity.isAttacking) {
@@ -54,44 +59,41 @@ void UpdatePlayer(Player *player, float deltaTime, int currentFrame) {
         return; 
     }
                 
-    UpdateEnemyFrameRec(player, currentFrame);
+    UpdateEntityFrameRec(&player->entity, currentFrame, player->last_animation, 
+    PLAYER_SPRITESHEET_WIDTH, PLAYER_SPRITESHEET_HEIGHT);
     player->last_animation = player->last_animation;
-
 }
 
 void updatePlayerPosition(Player *player, float deltaX, float deltaY, int animation) {
-    player->entity.position.x += deltaX;
-    player->entity.position.y += deltaY;
+    UpdateEntityPosition(&player->entity, deltaX, deltaY);
     player->last_animation = animation;
-    player->entity.isMoving = true;
 }
 
-void isEnemyMoving(Player *player, float deltaTime, int currentFrame) {
+void isPlayerMoving(Player *player, float deltaTime, int currentFrame) {
     player->entity.isMoving = false;
 
-    if (IsKeyDown(KEY_LEFT) || IsKeyDown(KEY_A)) {
-        updatePlayerPosition(player, -player->entity.speed * deltaTime, 0, SIDE_WALK_ANIMATION);
-        if (player->texture.width > 0) player->texture.width *= -1;
-    } 
-    else if (IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_D)) {
-        updatePlayerPosition(player, player->entity.speed * deltaTime, 0, SIDE_WALK_ANIMATION);
-        if (player->texture.width < 0) player->texture.width *= -1;
-    } 
+    float player_speed = player->entity.speed * deltaTime;
 
-    if (IsKeyDown(KEY_UP) || IsKeyDown(KEY_W)) {
-        updatePlayerPosition(player, 0, -player->entity.speed * deltaTime, BACK_WALK_ANIMATION);
-    } 
-    if (IsKeyDown(KEY_DOWN) || IsKeyDown(KEY_S)) {
-        updatePlayerPosition(player, 0, player->entity.speed * deltaTime, FRONT_WALK_ANIMATION);
-    }
+    bool LEFT = IsKeyDown(KEY_LEFT) || IsKeyDown(KEY_A);
+    bool RIGHT = IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_D);
+    bool UP = IsKeyDown(KEY_UP) || IsKeyDown(KEY_W);
+    bool DOWN = IsKeyDown(KEY_DOWN) || IsKeyDown(KEY_S);
 
-    if (player->entity.isMoving && !IsSoundPlaying(player->walk_1) && !IsSoundPlaying(player->walk_2)) {
-        rand() % 2 == 0 ? PlaySound(player->walk_1) : PlaySound(player->walk_2);
-    }
+
+    if ((LEFT || RIGHT) && (UP || DOWN)) player_speed /= 1.5;
+
+    player->entity.texture.width > 0 && LEFT ? player->entity.texture.width *= -1 : 0;
+    player->entity.texture.width < 0 && RIGHT ? player->entity.texture.width *= -1 : 0;
+    
+    if (LEFT) updatePlayerPosition(player, -player_speed, 0, SIDE_WALK_ANIMATION);
+    if (RIGHT) updatePlayerPosition(player, player_speed, 0, SIDE_WALK_ANIMATION);
+    if (UP) updatePlayerPosition(player, 0, -player_speed, BACK_WALK_ANIMATION);
+    if (DOWN) updatePlayerPosition(player, 0, player_speed, FRONT_WALK_ANIMATION);
+    PlaySound(player->walk_sounds[rand() % 3]);
 }
 
 void isAttacking(Player *player) {
-    if (IsKeyDown(KEY_SPACE) || IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+    if (IsKeyDown(KEY_SPACE)) {
         switch (player->last_animation) {
             case SIDE_WALK_ANIMATION:
                 player->last_animation = SIDE_ATTACK_ANIMATION;
@@ -104,31 +106,15 @@ void isAttacking(Player *player) {
                 break;
         }
         player->entity.isAttacking = true;
+        if (!IsSoundPlaying(player->attack_sound)) PlaySound(player->attack_sound);
+        
+        return;
     }
-
     else player->entity.isAttacking = false;
-
-
 }
 
 void DrawPlayer(Player *player) { 
-    Rectangle playerRec = (Rectangle){player->entity.position.x, player->entity.position.y, PLAYER_SIZE, PLAYER_SIZE};
-    Vector2 playerOrigin = (Vector2){12, 18};
-
-    DrawEntityHealthBar(player->entity, player->entity.health, PLAYER_BASE_HEALTH);
-    DrawTexturePro(player->texture, player->frameRec, playerRec, playerOrigin, 0, WHITE);
-
-}
-
-void UpdateEnemyFrameRec(Player *player, int currentFrame) {
-    if (player->entity.isAttacking) {
-        if (currentFrame >= 3)
-            return;
-        }
-                                    
-
-    player->frameRec.x = (float)currentFrame * (float)player->texture.width / 6;
-    player->frameRec.y = (float)player->last_animation * (float)player->texture.height / 10;
+    DrawEntity(player->entity, PLAYER_SIZE, 12, 18, PLAYER_BASE_HEALTH);
 }
 
 void PlayIdleAnimation(Player *player, int currentFrame) {
@@ -145,7 +131,5 @@ void PlayIdleAnimation(Player *player, int currentFrame) {
             idle_animation = FRONT_IDLE_ANIMATION;
             break;
     }
-
-    player->frameRec.y = (float)idle_animation * (float)player->texture.height / 10;
-    player->frameRec.x = (float)currentFrame * (float)player->texture.width / 6;
+    UpdateEntityFrameRec(&player->entity, currentFrame, idle_animation, PLAYER_SPRITESHEET_WIDTH, PLAYER_SPRITESHEET_HEIGHT);
 }

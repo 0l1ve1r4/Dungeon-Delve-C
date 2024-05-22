@@ -14,36 +14,27 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef DEFS_H
-#define DEFS_H
+#ifndef PATHS_H
+#define PATHS_H
 
-//==============================================================================
-// INCLUDES
-//
-#include "raylib.h"
-#include "raymath.h"
-#include "structs.h"
-// 
-// STANDARD LIBRARIES
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
-#include <stdbool.h>    
-#include <unistd.h>
-#include <stdint.h>
-//
-#define GAME_VERSION "VERSION: 0.1.0"
-#define SCREEN_WIDTH 1200
-#define SCREEN_HEIGHT 650
-#define SCREEN_TITLE "Dungeon Delve C"
-#define TARGET_FPS 120
-#define __TILE_SIZE 16
-#define FOG_RADIUS  200
-#define GLOBAL_FRAME_SPEED 12
-//
-//==============================================================================
-// MAIN FUNCTIONS
-MapNode* menu_screen(void);
+enum PlayerSoundType {
+    WALK_1,
+    WALK_2,
+    WALK_3,
+    COUNT_WALK_SOUNDS,
+    
+    ATTACK_1,
+    COUNT_ATTACK_SOUNDS,
+    
+    SOUNDS_COUNTS //Insert before this
 
-#endif
+};
+
+char* PlayerSoundPaths[SOUNDS_COUNTS] = {
+    "res/sounds/player/walk_1.wav",
+    "res/sounds/player/walk_2.wav",
+    "res/sounds/player/walk_3.wav",
+    "res/sounds/player/attack.wav"
+};
+
+#endif // PATHS_H
