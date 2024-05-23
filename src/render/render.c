@@ -45,7 +45,7 @@ void RenderMap(MapNode* nodes, Camera2D camera){
     }
 }
 
-void UpdateMapCollision(Player *player, MapNode *map){
+CollisionsReturnType UpdateMapCollision(Player *player, MapNode *map){
 
     Rectangle player_rect = (Rectangle){player->entity.position.x, player->entity.position.y, 8, 10};
 

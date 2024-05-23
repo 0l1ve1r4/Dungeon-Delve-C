@@ -77,9 +77,7 @@ void UpdateEnemy(Enemy *enemy, Player* player, float deltaTime, int currentFrame
 
     if (!enemy->entity.isMoving) return;
 
-
-    UpdateEntityFrameRec(&enemy->entity, currentFrame, enemy->Y_frame, ENEMY_SPRITESHEET_WIDTH, ENEMY_SPRITESHEET_HEIGHT); 
-    
+    UpdateEntityFrameRec(&enemy->entity, currentFrame, enemy->Y_frame, ENEMY_SPRITESHEET_WIDTH, ENEMY_SPRITESHEET_HEIGHT);     
 }
 
 void updatePlayerHealth(Player* player) {
@@ -125,7 +123,6 @@ void handleCollision(Enemy *enemy, Player* player, float deltaTime, int directio
 
             updatePlayerHealth(player);
         }
-    
     }
 }
 
@@ -162,11 +159,10 @@ void isMoving(Enemy *enemy, Player* player, float deltaTime, int currentFrame) {
         UpdateEntityPosition(&enemy->entity, 0, -enemy->entity.speed * deltaTime);
         handleCollision(enemy, player, deltaTime, 0, 1);
     }
-
 }
 
 void DrawEnemyMap(MapNode *TileMap) {
     for (int i = 0; i < TileMap->num_enemies ; i++) {
-        DrawEntity(TileMap->enemies[i]->entity, ENEMY_SIZE, 5, 10, ENEMY_BASE_HEALTH);
+        DrawEntity(TileMap->enemies[i]->entity, ENEMY_SIZE, 8, 12, ENEMY_BASE_HEALTH);
     }
 }

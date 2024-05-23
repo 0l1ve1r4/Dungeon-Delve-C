@@ -23,7 +23,7 @@
 //====== maps.c ====================================================================================//
 //
 Vector2** SetTilePosition(int matrix_length, int tile_size);
-MapNode* InitMap(int map_size);
+MapNode* InitMap(int MapSize);
 //
 //====== map_generator.c ===========================================================================//
 //

@@ -27,8 +27,7 @@ Camera2D InitPlayerCamera(Player *player){
 
 }
 
-void UpdatePlayerCamera(Camera2D *camera, Player *player, float delta, int width, int height)
-{
+void UpdatePlayerCamera(Camera2D *camera, Player *player, float delta, int width, int height) {
     float minSpeed = 30 * (float) (camera->zoom * 2);
     static float minEffectLength = 10; 
     static float fractionSpeed = 0.8f;

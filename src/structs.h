@@ -47,8 +47,8 @@ struct Entity{
     float health;           // health is always a number % 0.5 == 0             
     float stamina;          // stamina is always a number % 0.5 == 0
     float mana;             // mana is always a number % 0.5 == 0
-    int damage;             
-    int speed;
+    float damage;             
+    float speed;
     bool isAlive;
     bool isAttacking;
     bool isMoving;  
@@ -76,6 +76,8 @@ struct Tile{
     Rectangle rect;         // Rectangle of the tile (Used for collision detection)
     bool blocking;          // Used to check if the tile can block entities
     bool isBreakable;       // Used to check if the tile can be broken
+    bool isStair;           // Used to check if the tile is a stair
+    bool isHole;            // Used to check if the tile is a hole
 };
 
 struct MapNode{
@@ -89,8 +91,8 @@ struct MapNode{
     int num_enemies;        // Number of enemies in the map
     Enemy** enemies;         // Array of enemies in the map
 
+    int (*updateCollisions)(Player*, MapNode*);          // Function pointer to update the collisions in the map
     void (*updateEnemies)(MapNode*, float, int, Player*); // Function pointer to update the enemies in the map
-    void (*updateCollisions)(Player*, MapNode*);          // Function pointer to update the collisions in the map
     void (*drawEnemies)(MapNode*);                        // Function pointer to draw the enemies in the map
     void (*drawMap)(MapNode*, Camera2D);                            // Function pointer to draw the map
 };

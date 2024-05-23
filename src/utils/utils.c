@@ -58,20 +58,37 @@ void ShowControls(void)
     DrawText("Interact - E ", 40, 80, 10, WHITE);
 }
 
-void GetGameInfo(Player* player){
+void GetGameInfo(Player* player) {
+    const int BUFFER_SIZE = 32;
+    const int INFO_COUNT = 5;
+    const int TEXT_SIZE = 10;
+    char* texts[INFO_COUNT];
 
-    char* info_text = (char*)malloc(50 * sizeof(char));
+    for (int i = 0; i < INFO_COUNT; i++) 
+        texts[i] = (char*)malloc(BUFFER_SIZE * sizeof(char));
 
-    int frames_per_second = GetFPS();
-    int player_x = player->entity.position.x;
-    int player_y = player->entity.position.y;
+    float values[] = { (float)GetFPS(),
+        player->entity.health,
+        player->entity.stamina,
+        player->entity.mana,
+        player->entity.damage
+    };
 
-    sprintf(info_text, "| FPS: %i", frames_per_second);
+    const char* formats[] = { "FPS: %.1f",
+        "Health: %.1f",
+        "Stamina: %.1f",
+        "Mana: %.1f",
+        "Strength: %.1f"
+    };
+
+    float right_corner = (float)SCREEN_WIDTH / 10 * 9.3;
+
+    for (int i = 0; i < INFO_COUNT; i++) {
+        sprintf(texts[i], formats[i], values[i]);
+        DrawText(texts[i], right_corner, i * 20, TEXT_SIZE, WHITE);
+        free(texts[i]);
     
-    float right_corner = (float)SCREEN_WIDTH/10 * 7;
-
-    DrawText(info_text, right_corner, 0, 20, WHITE);
-    
+    }
 
 }
 

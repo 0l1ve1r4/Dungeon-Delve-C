@@ -19,17 +19,14 @@
 #include "entity/enemy.h"
 #include "render/render.h"
 
-static bool world_settings = false;
-static bool isRaining = false;
-static int MAP_SIZE = 100;
-static int MAP_SEED = 29072022;
-static int verticalCenter = (SCREEN_HEIGHT - 40 * MAX_OPTIONS) / 2;
-static float isRainingAlpha = 0.0f;
-static MapNode* TileMapGraph = NULL;
+static MenuData* menuDataPtr;
+static MenuFiles* menuFilesPtr;
+
+
 
 const char *defaultOptions[MAX_OPTIONS] = {"SINGLEPLAYER", "MULTIPLAYER", "OPTIONS", "EXIT"};
 
-MapNode* menu_screen(void) {
+MenuData* menu_screen(void) {
 
     int animFrames = 0; 
     uint32_t nextFrameDataOffset = 0;
@@ -37,8 +34,12 @@ MapNode* menu_screen(void) {
     uint8_t frameDelay = 10;            
     uint8_t frameCounter = 0;
 
-    MenuOption selectedOption = 0;
-    MenuOption* selectedOptionPtr = &selectedOption;
+    menuDataPtr = &INIT_MENU_DATA();
+ 
+
+    ///===================================================================================================
+    
+
 
     Texture2D logo = LoadTexture(LOGO_PATH);
     Texture2D wall = LoadTexture(WALL_PATH);
@@ -52,8 +53,6 @@ MapNode* menu_screen(void) {
 
     SetSoundVolume(change_option, 0.1f);
     SetSoundVolume(select_option, 0.1f);
-
-    Color background_color = BACKGROUND_COLOR;
     
     Image fireAnim = LoadImageAnim(FIRE_ANIM_PATH, &animFrames);
     Image rain = LoadImageAnim(RAIN_ANIM_PATH, &animFrames);
@@ -66,7 +65,7 @@ MapNode* menu_screen(void) {
 
     PlayMusicStream(music);
 
-    while (!WindowShouldClose()) {  
+    while (1) {  
         //==============================================================================
         // Update
         // 
@@ -82,7 +81,7 @@ MapNode* menu_screen(void) {
         //
         UpdateMusicStream(music);
         UpdateRaining(lightning);
-        UpdateOptions(selectedOptionPtr, change_option, select_option);
+        UpdateOptions(&menuDataPtr->selectedOption, change_option, select_option);
         //
         //==============================================================================
         // Draw
@@ -91,22 +90,22 @@ MapNode* menu_screen(void) {
         BeginDrawing();
         //
         // Draw background
-        DrawBackground(logo, wall, texFireAnim, texRain, selectedOption);
+        DrawBackground(logo, wall, texFireAnim, texRain, menuDataPtr->selectedOption);
         //
         // Rain effect
-        DrawCircleGradient(verticalCenter+300, 500, 1000, Fade(WHITE, 0.f), Fade(WHITE, isRainingAlpha));
+        DrawCircleGradient(menuDataPtr->verticalCenter+300, 500, 1000, Fade(WHITE, 0.f), Fade(WHITE, menuDataPtr->RainingAlpha));
         //
         //
         // Check what part of the menu to draw
-        if (world_settings) DrawWorldSettings(selectedOption);
-        else if (!world_settings) DrawAllOptions(selectedOption);
+        if (menuDataPtr->isInWorldSettings) DrawWorldSettings(menuDataPtr->selectedOption);
+        else if (!menuDataPtr->isInWorldSettings) DrawAllOptions(menuDataPtr->selectedOption);
         //
         // Draw fog
-        DrawCircleGradient(verticalCenter+300, 0, 1000, Fade(background_color, 0.f), Fade(background_color, 10.0f));    
+        DrawCircleGradient(menuDataPtr->verticalCenter+300, 0, 1000, Fade(menuDataPtr->backgroundColor, 0.f), Fade(menuDataPtr->backgroundColor, 10.0f));    
         //
         EndDrawing();
 
-    if (TileMapGraph != NULL) return TileMapGraph;
+    if (menuDataPtr->TileMapGraph != NULL) return menuDataPtr;
 
     }
 
@@ -129,16 +128,16 @@ void UpdateOptions(MenuOption* selectedOptionPtr, Sound change_option, Sound sel
             PlaySound(change_option);
         }
 
-        if (IsKeyPressed(KEY_ENTER) && !world_settings) {
+        if (IsKeyPressed(KEY_ENTER) && !menuDataPtr->isInWorldSettings) {
             PlaySound(select_option);
             switch (selectedOption) {
                 
                 case OPTION_SINGLEPLAYER:
-                    world_settings = true;
+                    menuDataPtr->isInWorldSettings = true;
                     break;
 
                 case OPTION_MULTIPLAYER:
-                    world_settings = true;
+                    menuDataPtr->isInWorldSettings = true;
                     break;
                 
                 case OPTION_OPTIONS:
@@ -152,19 +151,19 @@ void UpdateOptions(MenuOption* selectedOptionPtr, Sound change_option, Sound sel
             }
         }
 
-        else if (IsKeyPressed(KEY_ENTER) && world_settings) {
+        else if (IsKeyPressed(KEY_ENTER) && menuDataPtr->isInWorldSettings) {
             PlaySound(select_option);
             switch (selectedOption) {
                 case 0:
-                    MAP_SIZE += MAP_SIZE >= MAP_MAX_SIZE ? -MAP_MAX_SIZE : 50;
+                    menuDataPtr->MapSize += menuDataPtr->MapSize >= menuDataPtr->MapMaxSize ? -menuDataPtr->MapMaxSize : 50;
                     break;
                 
                 case 1:
-                    MAP_SEED = rand() % MAX_SEED;
+                    menuDataPtr->MapSeed = rand() % menuDataPtr->MaxSeed;
                     break;
                 
                 case 2:
-                    world_settings = false;
+                    menuDataPtr->isInWorldSettings = false;
                     break;
                 
                 case 3:
@@ -178,14 +177,14 @@ void UpdateOptions(MenuOption* selectedOptionPtr, Sound change_option, Sound sel
 
 void UpdateRaining(Sound lightning){
 
-    if (isRainingAlpha > 0.0f) isRainingAlpha -= 0.1f;
-    else isRaining = false;
+    if (menuDataPtr->RainingAlpha > 0.0f) menuDataPtr->RainingAlpha -= 0.1f;
+    else menuDataPtr->isRaining = false;
 
 
-    if (rand()%10000 < 10 && !isRaining && !IsSoundPlaying(lightning)) {
+    if (rand()%10000 < 10 && !menuDataPtr->isRaining && !IsSoundPlaying(lightning)) {
             PlaySound(lightning);        
-            isRaining = true;
-            isRainingAlpha = 3.0f;
+            menuDataPtr->isRaining = true;
+            menuDataPtr->RainingAlpha = 3.0f;
         }
 
 }
@@ -193,14 +192,14 @@ void UpdateRaining(Sound lightning){
 void DrawBackground(Texture2D logo, Texture2D wall, Texture2D texFireAnim, Texture2D texRain, int selectedOption){
 
 
-        ClearBackground((Color)BACKGROUND_COLOR);
+        ClearBackground((Color)menuDataPtr->backgroundColor);
 
         int fire_y = (selectedOption - 1.3) * 60;
 
-        DrawTexture(texRain, verticalCenter-250, 0, WHITE);
-        DrawTexture(logo, verticalCenter+240, 10, WHITE);
-        DrawTexture(texFireAnim, verticalCenter+130, verticalCenter + fire_y, WHITE);
-        DrawTexture(texFireAnim, verticalCenter+480, verticalCenter + fire_y, WHITE);
+        DrawTexture(texRain, menuDataPtr->verticalCenter-250, 0, WHITE);
+        DrawTexture(logo, menuDataPtr->verticalCenter+240, 10, WHITE);
+        DrawTexture(texFireAnim, menuDataPtr->verticalCenter+130, menuDataPtr->verticalCenter + fire_y, WHITE);
+        DrawTexture(texFireAnim, menuDataPtr->verticalCenter+480, menuDataPtr->verticalCenter + fire_y, WHITE);
 
         for (int i = SCREEN_HEIGHT/ 2 + 290; i < SCREEN_HEIGHT; i += __TILE_SIZE)
             for (int j = 0; j < SCREEN_WIDTH; j += __TILE_SIZE)
@@ -227,7 +226,7 @@ void DrawOption(const char *text, Rectangle optionRect, Color color) {
 
 void DrawAllOptions(int selectedOption){
     for (int i = 0; i < MAX_OPTIONS; i++) {
-        Vector2 rectPos = {SCREEN_WIDTH / 2 - 200, verticalCenter + 60 * i};
+        Vector2 rectPos = {SCREEN_WIDTH / 2 - 200, menuDataPtr->verticalCenter + 60 * i};
         Rectangle optionRect = {rectPos.x, rectPos.y, 400, 40};
         
 
@@ -238,13 +237,13 @@ void DrawAllOptions(int selectedOption){
 
 void DrawWorldSettings(int selectedOption){
     char option_1[20], option_2[20];
-    sprintf(option_1, "MAP SIZE: %i", MAP_SIZE);
-    sprintf(option_2, "MAP SEED: %i", MAP_SEED);
+    sprintf(option_1, "MAP SIZE: %i", menuDataPtr->MapSize);
+    sprintf(option_2, "MAP SEED: %i", menuDataPtr->MapSeed);
 
     const char *drawWorldOptions[MAX_OPTIONS] = {option_1, option_2, "BACK", "START GAME"};
 
     for (int i = 0; i < MAX_OPTIONS; i++) {
-        Vector2 rectPos = {SCREEN_WIDTH / 2 - 200, verticalCenter + 60 * i};
+        Vector2 rectPos = {SCREEN_WIDTH / 2 - 200, menuDataPtr->verticalCenter + 60 * i};
         Rectangle optionRect = {rectPos.x, rectPos.y, 400, 40};
 
         Color color = i == selectedOption ? RED : ColorFromNormalized((Vector4){0.44f, 0.44f, 0.44f, 1.0f});
@@ -253,10 +252,10 @@ void DrawWorldSettings(int selectedOption){
 }
 
 void startSinglePlayer(void){
-    InitRandomSeed((void*)MAP_SEED);
-    TileMapGraph = InitMap(MAP_SIZE);
-    TileMapGraph->updateEnemies = &UpdateEnemiesMap;
-    TileMapGraph->updateCollisions = &UpdateMapCollision;
-    TileMapGraph->drawEnemies = &DrawEnemyMap;
-    TileMapGraph->drawMap = &RenderMap;
+    InitRandomSeed((void*)menuDataPtr->MapSeed);
+    menuDataPtr->TileMapGraph = InitMap(menuDataPtr->MapSize);
+    menuDataPtr->TileMapGraph->updateEnemies = &UpdateEnemiesMap;
+    menuDataPtr->TileMapGraph->updateCollisions = &UpdateMapCollision;
+    menuDataPtr->TileMapGraph->drawEnemies = &DrawEnemyMap;
+    menuDataPtr->TileMapGraph->drawMap = &RenderMap;
 }

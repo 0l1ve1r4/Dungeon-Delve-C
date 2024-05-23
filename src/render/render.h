@@ -23,8 +23,17 @@
 #include "../entity/player.h"
 
 
+typedef enum {
+
+    BLOCKED = 0x00,
+    UNBLOCKED = 0x01,
+    STAIR = 0x02,
+
+} CollisionsReturnType;
+
+
 void RenderMap(MapNode* nodes, Camera2D camera);
-void UpdateMapCollision(Player *player, MapNode *map);
+CollisionsReturnType UpdateMapCollision(Player *player, MapNode *map);
 
 // CAMERA RELATED - FUNCTIONS //
 Camera2D InitPlayerCamera(Player *player);

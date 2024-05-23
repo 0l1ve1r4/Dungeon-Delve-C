@@ -19,7 +19,7 @@
 //
 #include "entity.h"
 //
-#define PLAYER_BASE_HEALTH 3.5
+#define PLAYER_BASE_HEALTH 5
 #define PLAYER_BASE_STAMINA 3
 #define PLAYER_BASE_MANA 3
 #define PLAYER_BASE_DAMAGE 1

@@ -33,6 +33,7 @@
 #include <unistd.h>
 #include <stdint.h>
 //
+#define ARRAY_LEN(arr) (sizeof(arr) / sizeof(arr[0]))
 #define GAME_VERSION "VERSION: 0.1.0"
 #define SCREEN_WIDTH 1200
 #define SCREEN_HEIGHT 650
@@ -44,7 +45,4 @@
 #define BACKGROUND_MUSIC "res/sounds/background.mp3"
 //
 //==============================================================================
-// MAIN FUNCTIONS
-MapNode* menu_screen(void);
-
 #endif

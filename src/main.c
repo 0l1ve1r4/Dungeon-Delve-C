@@ -16,11 +16,18 @@
 
 #include "defs.h"
 #include "structs.h"
+#include "menu.h"
 
 #include "entity/player.h"
+#include "entity/enemy.h"
+#include "map/maps.h"
 #include "render/render.h"
+#include "utils/utils.h"
+
+
 
 void UpdateGameVariables(GameVariables *game_variables);
+void LoadingWindow(void);
 
 int main(void)
 {    
@@ -28,15 +35,18 @@ int main(void)
     SetTargetFPS(TARGET_FPS);
     InitAudioDevice();             
 
-    MapNode* TileMap = menu_screen();
+    MenuData* MapInfo = menu_screen();
+    MapNode* TileMap = MapInfo->TileMapGraph;
+
     Player* Player = InitPlayer(TileMap);
     Camera2D Camera = InitPlayerCamera(Player);
     GameVariables* GameVar = &(GameVariables){ .update = UpdateGameVariables };
 
-    Music music = LoadMusicStream(BACKGROUND_MUSIC);
+    Music backgroundMusic = LoadMusicStream(BACKGROUND_MUSIC);
 
-    PlayMusicStream(music);
+    PlayMusicStream(backgroundMusic);
     InitRandomSeed(NULL);
+    LoadingWindow();
 
     //=======================================================================================
     // Main game loop
@@ -45,15 +55,13 @@ int main(void)
     {
         //==================================================================================
         // Update
-        //
-        //
-        UpdateMusicStream(music);
+        UpdateMusicStream(backgroundMusic);
         //
         GameVar->update(GameVar); 
         Player->update(Player, GameVar->delta_time, GameVar->current_frame);
         Player->updateCamera(&Camera, Player, GameVar->delta_time, SCREEN_WIDTH, SCREEN_HEIGHT);
         TileMap->updateEnemies(TileMap, GameVar->delta_time, GameVar->current_frame, Player);
-        TileMap->updateCollisions(Player, TileMap);
+        CollisionsReturnType cType = TileMap->updateCollisions(Player, TileMap);
         //
         //==================================================================================
         // Draw
@@ -64,9 +72,7 @@ int main(void)
                     
                 TileMap->drawMap(TileMap, Camera);
                 TileMap->drawEnemies(TileMap);
-
                 Player->draw(Player);
-
                 DrawFog(Camera, FOG_RADIUS);
 
             EndMode2D();
@@ -79,11 +85,11 @@ int main(void)
     }
 
     //==================================================================================
-    free(TileMap);
-    free(Player);
-    UnloadMusicStream(music);
+    UnloadMusicStream(backgroundMusic);
     CloseAudioDevice();
     CloseWindow();        // Close window and OpenGL context
+    free(TileMap);
+    free(Player);
     //==================================================================================
 
     return 0;
@@ -105,5 +111,17 @@ void UpdateGameVariables(GameVariables *game_variables) {
         } else {
             game_variables->current_frame++;
         }
+    }
+}
+
+void LoadingWindow(void) {
+    time_t start_time = time(NULL);
+    int max_loading_seconds = 2;
+
+    while (!WindowShouldClose() && time(NULL) - start_time < max_loading_seconds) {
+        BeginDrawing();
+            ClearBackground(BLACK);
+            DrawText("Loading...", SCREEN_WIDTH / 2 - 50, SCREEN_HEIGHT / 2, 20, WHITE);
+        EndDrawing();
     }
 }

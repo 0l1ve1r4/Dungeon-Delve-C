@@ -21,9 +21,6 @@
 #include "map/maps.h"
 #include "utils/utils.h"
 
-#define BACKGROUND_COLOR {1, 1, 26, 255}
-#define MAP_MAX_SIZE 500
-#define MAX_SEED 99999999
 
 #define LOGO_PATH "res/static/background.png"
 #define WALL_PATH "res/static/wall.png"
@@ -38,6 +35,60 @@
 #define MAX_OPTIONS 4
 #define MAX_INPUT_CHARS 9
 
+typedef struct {
+    bool isRaining;
+    bool isInWorldSettings;
+    int MapSize;
+    int MapSeed;
+    int MaxSeed;
+    int MapMaxSize;
+    int selectedOption;
+    int verticalCenter;
+    float RainingAlpha;
+    MapNode* TileMapGraph;
+    Color backgroundColor;
+} MenuData;
+
+typedef struct {
+    Texture2D logoTexture;
+    Texture2D wallTexture;
+    Sound changeOptionSound;
+    Sound selectOptionSound;
+    Sound lightningSound;
+    Image fireAnimImage;
+    Image rainAnimImage;
+    Texture2D fireAnimTexture;
+    Texture2D rainAnimTexture;
+    Music backgroundMusic;
+} MenuFiles;
+
+#define INIT_MENU_DATA(void) ((MenuData){                       \
+    .isRaining = false,                                         \
+    .isInWorldSettings = false,                                 \
+    .MapSize = 100,                                             \
+    .MapSeed = 29072022,                                        \
+    .MaxSeed = 99999999,                                        \
+    .MapMaxSize = 500,                                          \
+    .selectedOption = 0,                                        \
+    .verticalCenter = (SCREEN_HEIGHT - 40 * MAX_OPTIONS) / 2,   \
+    .RainingAlpha = 0,                                          \
+    .TileMapGraph = NULL,                                       \
+    .backgroundColor = (Color){1, 1, 26, 255},                  \
+})
+
+#define INIT_MENU_FILES(animFrames) ((MenuFiles){               \
+    .logoTexture = LoadTexture(LOGO_PATH),                      \
+    .wallTexture = LoadTexture(WALL_PATH),                      \
+    .logoTexture.width = 200,                                   \
+    .logoTexture.height = 200,                                  \
+    .changeOptionSound = LoadSound(CHANGE_OPTION_SOUND),        \
+    .selectOptionSound = LoadSound(SELECT_OPTION_SOUND),        \
+    .lightningSound = LoadSound(LIGHTNING_SOUND),               \
+    .fireAnimImage = LoadImageAnim(FIRE_ANIM_PATH, &animFrames),\
+    .rainAnimImage = LoadImageAnim(RAIN_ANIM_PATH, &animFrames),\
+    .backgroundMusic = LoadMusicStream(BACKGROUND_MENU_MUSIC)   \
+})
+
 typedef enum {
     OPTION_SINGLEPLAYER,
     OPTION_MULTIPLAYER,
@@ -47,7 +98,7 @@ typedef enum {
 
 
 // Updates
-
+MenuData* menu_screen(void);
 void UpdateRaining(Sound lightning);
 void UpdateOptions(MenuOption* selectedOptionPtr, Sound change_option, Sound select_option);
 

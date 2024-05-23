@@ -25,7 +25,7 @@
 #define ENEMY_BASE_MANA 3
 #define ENEMY_BASE_SPEED 20
 #define ENEMY_BASE_DAMAGE 1
-#define ENEMY_SIZE (__TILE_SIZE * 4)
+#define ENEMY_SIZE (__TILE_SIZE * 2)
 #define ENEMY_SPRITESHEET "res/characters/Flight.png"
 #define ENEMY_SPRITESHEET_WIDTH 8
 #define ENEMY_SPRITESHEET_HEIGHT 1
