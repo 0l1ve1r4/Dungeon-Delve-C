@@ -15,6 +15,9 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "menu.h"
+#include "entity/player.h"
+#include "entity/enemy.h"
+#include "render/render.h"
 
 static bool world_settings = false;
 static bool isRaining = false;
@@ -248,7 +251,12 @@ void DrawWorldSettings(int selectedOption){
         DrawOption(drawWorldOptions[i], optionRect, color);
     }
 }
+
 void startSinglePlayer(void){
     InitRandomSeed((void*)MAP_SEED);
     TileMapGraph = InitMap(MAP_SIZE);
+    TileMapGraph->updateEnemies = &UpdateEnemiesMap;
+    TileMapGraph->updateCollisions = &UpdateMapCollision;
+    TileMapGraph->drawEnemies = &DrawEnemyMap;
+    TileMapGraph->drawMap = &RenderMap;
 }

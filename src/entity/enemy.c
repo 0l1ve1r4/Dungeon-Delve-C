@@ -39,9 +39,9 @@ Enemy* InitEnemy(int spawn_x, int spawn_y){
 
     );
 
-    enemy->current_y_frame = 0;
-    enemy->isMoving = false;
-    enemy->isAttacking = false;
+    enemy->Y_frame = 0;
+    enemy->entity.isMoving = false;
+    enemy->entity.isAttacking = false;
 
     return enemy;
 
@@ -61,7 +61,7 @@ void UpdateEnemy(Enemy *enemy, Player* player, float deltaTime, int currentFrame
     if (!enemy->entity.isAlive) return;
     
     if (enemy->entity.health < 0){ 
-        enemy->current_y_frame = 1;
+        enemy->Y_frame = 1;
         PlaySound(enemy->entity.death_sound); }
 
     
@@ -75,10 +75,10 @@ void UpdateEnemy(Enemy *enemy, Player* player, float deltaTime, int currentFrame
 
     isMoving(enemy, player, deltaTime, currentFrame);
 
-    if (!enemy->isMoving) return;
+    if (!enemy->entity.isMoving) return;
 
 
-    UpdateEntityFrameRec(&enemy->entity, currentFrame, enemy->current_y_frame, ENEMY_SPRITESHEET_WIDTH, ENEMY_SPRITESHEET_HEIGHT); 
+    UpdateEntityFrameRec(&enemy->entity, currentFrame, enemy->Y_frame, ENEMY_SPRITESHEET_WIDTH, ENEMY_SPRITESHEET_HEIGHT); 
     
 }
 
@@ -130,7 +130,7 @@ void handleCollision(Enemy *enemy, Player* player, float deltaTime, int directio
 }
 
 void isMoving(Enemy *enemy, Player* player, float deltaTime, int currentFrame) {
-    enemy->isMoving = true;
+    enemy->entity.isMoving = true;
 
     bool LEFT = enemy->entity.position.x < player->entity.position.x;
     bool RIGHT = enemy->entity.position.x > player->entity.position.x;
@@ -140,8 +140,8 @@ void isMoving(Enemy *enemy, Player* player, float deltaTime, int currentFrame) {
     enemy->entity.texture.width < 0 && LEFT ? enemy->entity.texture.width *= -1 : 0;
     enemy->entity.texture.width > 0 && RIGHT ? enemy->entity.texture.width *= -1 : 0;
 
-    if (LEFT || RIGHT || UP || DOWN) enemy->isMoving = true;
-    else enemy->isMoving = false;
+    if (LEFT || RIGHT || UP || DOWN) enemy->entity.isMoving = true;
+    else enemy->entity.isMoving = false;
 
     if (LEFT){
         UpdateEntityPosition(&enemy->entity, enemy->entity.speed * deltaTime, 0);

@@ -16,6 +16,7 @@
 
 #include "player.h"
 #include "paths.h"
+#include "../render/render.h"
 
 Player* InitPlayer(MapNode *Map){
     Player* player = (Player*)malloc(sizeof(Player));
@@ -44,9 +45,14 @@ Player* InitPlayer(MapNode *Map){
     
     player->attack_sound = LoadSound(PlayerSoundPaths[ATTACK_1]);
     player->last_animation = FRONT_WALK_ANIMATION;
+
+    player->update = &UpdatePlayer;
+    player->draw = &DrawPlayer;
+    player->updateCamera = &UpdatePlayerCamera;
     
     return player;
 }
+
 
 void UpdatePlayer(Player *player, float deltaTime, int currentFrame) {
     player->entity.last_position = player->entity.position;

@@ -18,32 +18,25 @@
 #include "structs.h"
 
 #include "entity/player.h"
-#include "entity/enemy.h"
 #include "render/render.h"
 
+void UpdateGameVariables(GameVariables *game_variables);
 
 int main(void)
 {    
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE);
     SetTargetFPS(TARGET_FPS);
-    
     InitAudioDevice();             
-    InitRandomSeed(NULL);
 
-    MapNode* TileMapGraph = menu_screen();
+    MapNode* TileMap = menu_screen();
+    Player* Player = InitPlayer(TileMap);
+    Camera2D Camera = InitPlayerCamera(Player);
+    GameVariables* GameVar = &(GameVariables){ .update = UpdateGameVariables };
 
-    Color bgColor = BLACK;
-
-    Player *player = InitPlayer(TileMapGraph);
-    Camera2D camera = InitPlayerCamera(player);
-    
-    Music music = LoadMusicStream("res/sounds/background.mp3");
+    Music music = LoadMusicStream(BACKGROUND_MUSIC);
 
     PlayMusicStream(music);
-
-    static int current_frame = 0;
-    static int frame_counter = 0;
-    static float delta_time = 0;
+    InitRandomSeed(NULL);
 
     //=======================================================================================
     // Main game loop
@@ -53,47 +46,64 @@ int main(void)
         //==================================================================================
         // Update
         //
-        delta_time = GetFrameTime();
-        frame_counter++;
-        frame_counter = (frame_counter >= (TARGET_FPS/GLOBAL_FRAME_SPEED)) ? 0 : frame_counter;
-        current_frame = (frame_counter == 0) ? ((current_frame > 5) ? 0 : current_frame + 1) : current_frame;
         //
-        UpdateMusicStream(music); 
-        UpdatePlayer(player, delta_time, current_frame);
-
-        UpdateEnemiesMap(TileMapGraph, delta_time, current_frame, player);
-
-        UpdatePlayerCamera(&camera, player, delta_time, SCREEN_WIDTH, SCREEN_HEIGHT);
-        UpdateMapCollision(player, TileMapGraph);
-
+        UpdateMusicStream(music);
+        //
+        GameVar->update(GameVar); 
+        Player->update(Player, GameVar->delta_time, GameVar->current_frame);
+        Player->updateCamera(&Camera, Player, GameVar->delta_time, SCREEN_WIDTH, SCREEN_HEIGHT);
+        TileMap->updateEnemies(TileMap, GameVar->delta_time, GameVar->current_frame, Player);
+        TileMap->updateCollisions(Player, TileMap);
         //
         //==================================================================================
         // Draw
         BeginDrawing();
-            ClearBackground(bgColor);
+            ClearBackground(BLACK);
             
-            BeginMode2D(camera);
+            BeginMode2D(Camera);
                     
-                RenderMap(TileMapGraph, camera);
+                TileMap->drawMap(TileMap, Camera);
+                TileMap->drawEnemies(TileMap);
 
-                DrawEnemyMap(TileMapGraph);
+                Player->draw(Player);
 
-                DrawPlayer(player);                
-
-                DrawFog(camera, FOG_RADIUS);
+                DrawFog(Camera, FOG_RADIUS);
 
             EndMode2D();
 
             ShowControls();
-            GetGameInfo(player);
+            GetGameInfo(Player);
         EndDrawing();
         //
         //==================================================================================
     }
 
     //==================================================================================
+    free(TileMap);
+    free(Player);
+    UnloadMusicStream(music);
+    CloseAudioDevice();
     CloseWindow();        // Close window and OpenGL context
     //==================================================================================
 
     return 0;
+}
+
+void UpdateGameVariables(GameVariables *game_variables) {
+    game_variables->delta_time = GetFrameTime();
+    game_variables->frame_counter++;
+
+    // Reset the frame counter if it exceeds
+    if (game_variables->frame_counter >= (TARGET_FPS/GLOBAL_FRAME_SPEED)) {
+        game_variables->frame_counter = 0;
+    }
+
+    // Update the current frame
+    if (game_variables->frame_counter == 0) {
+        if (game_variables->current_frame > 5) {
+            game_variables->current_frame = 0;
+        } else {
+            game_variables->current_frame++;
+        }
+    }
 }

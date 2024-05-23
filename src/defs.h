@@ -41,6 +41,7 @@
 #define __TILE_SIZE 16
 #define FOG_RADIUS  200
 #define GLOBAL_FRAME_SPEED 12
+#define BACKGROUND_MUSIC "res/sounds/background.mp3"
 //
 //==============================================================================
 // MAIN FUNCTIONS

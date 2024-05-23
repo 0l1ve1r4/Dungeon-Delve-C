@@ -15,6 +15,7 @@
         "map": "c",
         "menu.h": "c",
         "UI.C": "cpp",
-        "entity.h": "c"
+        "entity.h": "c",
+        "render.h": "c"
     }
 }

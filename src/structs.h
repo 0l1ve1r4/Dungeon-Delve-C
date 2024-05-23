@@ -19,7 +19,24 @@
 
 #include "defs.h"
 
-typedef struct {
+//==============================================================================
+// Forward declaration of the structs, this is necessary to avoid circular      
+// dependencies and to allow the structs to reference each other or reference 
+// themselves (speacially in the case of function pointers)
+// 
+// Oriented objects programming in C goes BRUH 
+//
+typedef struct Entity Entity;
+typedef struct Enemy Enemy;
+typedef struct Player Player;
+typedef struct Tile Tile;
+typedef struct MapNode MapNode;
+typedef struct GameVariables GameVariables;
+//
+//
+//==============================================================================
+
+struct Entity{
     Texture2D texture;      // Texture to represent the player
     Rectangle frameRec;     // Sprite frame rectangle (Used to animate the player)   
     Vector2 spawn_point;   
@@ -27,39 +44,41 @@ typedef struct {
     Vector2 last_position;  
     Sound take_damage_sound;
     Sound death_sound;
-    float health;             
-    float stamina;
-    float mana;
-    int damage;
+    float health;           // health is always a number % 0.5 == 0             
+    float stamina;          // stamina is always a number % 0.5 == 0
+    float mana;             // mana is always a number % 0.5 == 0
+    int damage;             
     int speed;
     bool isAlive;
     bool isAttacking;
     bool isMoving;  
-} Entity;
+};
 
-typedef struct 
-{
+struct Enemy {
     Entity entity;          // Entity struct to store the enemy information
-    int current_y_frame;    // Current frame of the enemy
-    bool isMoving;          // Boolean to check if the enemy is moving
-    bool isAttacking;       // Boolean to check if the enemy is attacki
-} Enemy;
+    unsigned int Y_frame;    // Current frame of the enemy
+};
 
-typedef struct {
+struct Player {
     Entity entity;          // Entity struct to store the player information
     Sound* walk_sounds;     // Vector of the player walking
-    Sound attack_sound;          // Sound of the player attacking
+    Sound attack_sound;     // Sound of the player attacking
     int last_animation;     // Last animation of the player
     int current_animation;  // Current animation of the player
-} Player;
 
-typedef struct {
+    void (*update)(Player*, float, int);  // Function pointer to update the player
+    void (*updateCamera)(Camera2D*, Player*, float, int, int);
+    void (*draw)(Player*);                // Function pointer to draw the player
+
+};
+
+struct Tile{
     Rectangle rect;         // Rectangle of the tile (Used for collision detection)
     bool blocking;          // Used to check if the tile can block entities
     bool isBreakable;       // Used to check if the tile can be broken
-} Tile;
+};
 
-typedef struct MapNode{
+struct MapNode{
     Tile** tile_info;       // Tile info is used to store the tile information (blocking, breakable, etc.)
     Vector2** positions;    // Positions of the each tile in the map, calculated with: (x * tile_size, y * tile_size)
     Texture2D* textures;    // Textures of the tiles
@@ -70,7 +89,21 @@ typedef struct MapNode{
     int num_enemies;        // Number of enemies in the map
     Enemy** enemies;         // Array of enemies in the map
 
-} MapNode;
+    void (*updateEnemies)(MapNode*, float, int, Player*); // Function pointer to update the enemies in the map
+    void (*updateCollisions)(Player*, MapNode*);          // Function pointer to update the collisions in the map
+    void (*drawEnemies)(MapNode*);                        // Function pointer to draw the enemies in the map
+    void (*drawMap)(MapNode*, Camera2D);                            // Function pointer to draw the map
+};
+
+struct GameVariables{
+    unsigned int current_frame;
+    unsigned int frame_counter;
+    float delta_time;
+    void (*update)(GameVariables*); // Function pointer to update the game variables (delta_time, frame_counter, current_frame
+
+};
+
+
 
 
 #endif // STRUCTS_H
