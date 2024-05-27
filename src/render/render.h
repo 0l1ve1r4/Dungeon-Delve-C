@@ -33,11 +33,11 @@ typedef enum {
 
 
 void RenderMap(MapNode* nodes, Camera2D camera);
-CollisionsReturnType UpdateMapCollision(Player *player, MapNode *map);
+int UpdateMapCollision(Player *player, MapNode *map);
 
 // CAMERA RELATED - FUNCTIONS //
 Camera2D InitPlayerCamera(Player *player);
-void UpdatePlayerCamera(Camera2D *camera, Player *player, float delta, int width, int height);
+void UpdatePlayerCamera(Camera2D *camera, Player *player, float delta);
 
 
 

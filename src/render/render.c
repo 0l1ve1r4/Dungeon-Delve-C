@@ -45,7 +45,7 @@ void RenderMap(MapNode* nodes, Camera2D camera){
     }
 }
 
-CollisionsReturnType UpdateMapCollision(Player *player, MapNode *map){
+int UpdateMapCollision(Player *player, MapNode *map){
 
     Rectangle player_rect = (Rectangle){player->entity.position.x, player->entity.position.y, 8, 10};
 
@@ -57,6 +57,19 @@ CollisionsReturnType UpdateMapCollision(Player *player, MapNode *map){
 
             else if (CheckCollisionRecs(player_rect, map->tile_info[X][Y].rect)){             
                 player->entity.position = player->entity.last_position;
+
+                char* debug = malloc(sizeof(char) * 100);
+                sprintf(debug, "Collision detected at %d, %d with %d block_type\n", X, Y, map->matrix[X][Y]);
+
+
+                debug_log(debug, "debug");
+
+
+                if (map->tile_info[X][Y].isStair){
+                    return STAIR;
+                }
+
+                else return BLOCKED;
             
             }
         }

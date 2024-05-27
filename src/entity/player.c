@@ -120,7 +120,7 @@ void isAttacking(Player *player) {
 }
 
 void DrawPlayer(Player *player) { 
-    DrawEntity(player->entity, PLAYER_SIZE, 8, 12, PLAYER_BASE_HEALTH);
+    DrawEntity(player->entity, PLAYER_SIZE, 8, 18, PLAYER_BASE_HEALTH);
 }
 
 void PlayIdleAnimation(Player *player, int currentFrame) {

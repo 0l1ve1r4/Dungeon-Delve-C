@@ -35,7 +35,13 @@ To compile and run the game, execute the `run.sh` script provided in the reposit
 ├── lib/                    # raylib.dll for windows compilations
 ├── res/                    # Game images and sounds
 ├── src/                    # source code
-├── run.sh                  # main compilation file    
+|   ├── entity/             # Entities def and funcs
+|   ├── map/                # Map generation
+|   ├── render/             # renderization and collisions manager
+|   ├── utils/
+|   ├── menu.c
+|   └─  main.c
+└─ run.sh                   # main compilation file    
 ```
 
 # Contributing

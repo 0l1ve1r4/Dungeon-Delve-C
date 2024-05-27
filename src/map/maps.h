@@ -34,6 +34,7 @@ bool IsSurroundedByFloor(MapNode *TileMap, int i, int j);
 void ClearSpawnPoint(MapNode* TileMap);
 void InitObjects(MapNode* TileMap);
 void InitBorders(MapNode* TileMap);
+void GetTileInfo(MapNode *TileMap);
 //
 //==================================================================================================//
 //

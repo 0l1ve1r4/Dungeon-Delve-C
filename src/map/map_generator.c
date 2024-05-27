@@ -55,9 +55,36 @@ void GenerateMap(MapNode* TileMap) {
 
     TileMap->enemies[0] = (Enemy*)InitEnemy(50, 50);
 
+    
+    GetTileInfo(TileMap);
 
     return;
 }
+
+// Get the tile info for each tile based on the generated matrix map
+void GetTileInfo(MapNode *TileMap){
+    for (int i = 0; i < TileMap->matrix_height; i++) {
+        for (int j = 0; j < TileMap->matrix_width; j++) {
+            
+            if (TileMap->matrix[i][j] == FLOOR_STAIRS)
+                TileMap->tile_info[i][j].isStair = true;
+
+            else
+                TileMap->tile_info[i][j].isStair = false;
+
+            if (TileMap->matrix[i][j] == HOLE) TileMap->tile_info[i][j].isHole = true;
+            else 
+                TileMap->tile_info[i][j].isHole = false;
+            
+
+            // Everything that is not a floor, must be blocking, check tiles.h for the values
+            if (TileMap->matrix[i][j] <= FLOOR_8)
+                TileMap->tile_info[i][j].blocking = false; 
+            else
+                TileMap->tile_info[i][j].blocking = true; 
+        }
+    }
+};
 
 void InitWalls(MapNode* TileMap) { // Fill the map with Perlin noise
   
@@ -73,7 +100,6 @@ void InitWalls(MapNode* TileMap) { // Fill the map with Perlin noise
                 if(floor > 8 || floor == 0) floor = FLOOR_1;
                 
                 TileMap->matrix[i][j] = floor;
-                TileMap->tile_info[i][j].blocking = false;
                 
             } else {
 
@@ -82,8 +108,6 @@ void InitWalls(MapNode* TileMap) { // Fill the map with Perlin noise
                 else if (rand_wall < 9500) TileMap->matrix[i][j] = WALL_HOLE_1;
                 else if (rand_wall < 9900) TileMap->matrix[i][j] = WALL_HOLE_2;
                 else if (rand_wall <= 10000) TileMap->matrix[i][j] = WALL_BANNER;
-
-                TileMap->tile_info[i][j].blocking = true;
             
             }
         }
@@ -95,7 +119,6 @@ void InitWalls(MapNode* TileMap) { // Fill the map with Perlin noise
             bool Issurrounded = IsSurroundedByFloor(TileMap, i, j);
             if (Issurrounded) {
                 TileMap->matrix[i][j] = FLOOR_1;
-                TileMap->tile_info[i][j].blocking = false;
             }
         }
     }
@@ -119,7 +142,6 @@ void ClearSpawnPoint(MapNode* TileMap){
     for (int i = spawn_y -1; i <= spawn_y + 1; i++) {
         for (int j = spawn_x - 1; j <= spawn_x + 1; j++){
             TileMap->matrix[i][j] = FLOOR_1;
-            TileMap->tile_info[i][j].blocking = false;
 
         }
     }
@@ -127,7 +149,7 @@ void ClearSpawnPoint(MapNode* TileMap){
 
 void InitObjects(MapNode* TileMap) {
 
-    int num_objects = TileMap->matrix_width / 50;
+    int num_objects = TileMap->matrix_width / 20;
 
     for (int i = 0; i < num_objects; i++) {
 
@@ -136,8 +158,6 @@ void InitObjects(MapNode* TileMap) {
         int stair_x = rand() % TileMap->matrix_width;
         int stair_y = rand() % TileMap->matrix_height;
         TileMap->matrix[stair_y][stair_x] = FLOOR_STAIRS;
-        TileMap->tile_info[stair_y][stair_x].blocking = false;
-        TileMap->tile_info[stair_y][stair_x].isBreakable = false;
     }
 }
 
@@ -146,14 +166,10 @@ void InitBorders(MapNode* TileMap) {
     for (int i = 0; i < TileMap->matrix_width; i++) {
         TileMap->matrix[i][0] = WALL_LEFT;
         TileMap->matrix[i][TileMap->matrix_width - 1] = WALL_RIGHT;
-        TileMap->tile_info[i][0].isBreakable = false;
-        TileMap->tile_info[i][TileMap->matrix_width - 1].blocking = true;
 
     } for (int j = 0; j < TileMap->matrix_width; j++) {
         TileMap->matrix[0][j] = WALL_MID;
         TileMap->matrix[TileMap->matrix_height - 1][j] = WALL_MID;
-        TileMap->tile_info[0][j].isBreakable = false;
-        TileMap->tile_info[TileMap->matrix_height - 1][j].blocking = true;
     
     }
 }

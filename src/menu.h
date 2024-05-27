@@ -44,71 +44,48 @@ typedef struct {
     int MapMaxSize;
     int selectedOption;
     int verticalCenter;
+    int animFrames; 
+    uint32_t nextFrameDataOffset;
+    uint8_t currentAnimFrame;      
+    uint8_t frameDelay;            
+    uint8_t frameCounter;
     float RainingAlpha;
     MapNode* TileMapGraph;
     Color backgroundColor;
 } MenuData;
 
 typedef struct {
-    Texture2D logoTexture;
-    Texture2D wallTexture;
     Sound changeOptionSound;
     Sound selectOptionSound;
     Sound lightningSound;
-    Image fireAnimImage;
-    Image rainAnimImage;
-    Texture2D fireAnimTexture;
-    Texture2D rainAnimTexture;
     Music backgroundMusic;
-} MenuFiles;
-
-#define INIT_MENU_DATA(void) ((MenuData){                       \
-    .isRaining = false,                                         \
-    .isInWorldSettings = false,                                 \
-    .MapSize = 100,                                             \
-    .MapSeed = 29072022,                                        \
-    .MaxSeed = 99999999,                                        \
-    .MapMaxSize = 500,                                          \
-    .selectedOption = 0,                                        \
-    .verticalCenter = (SCREEN_HEIGHT - 40 * MAX_OPTIONS) / 2,   \
-    .RainingAlpha = 0,                                          \
-    .TileMapGraph = NULL,                                       \
-    .backgroundColor = (Color){1, 1, 26, 255},                  \
-})
-
-#define INIT_MENU_FILES(animFrames) ((MenuFiles){               \
-    .logoTexture = LoadTexture(LOGO_PATH),                      \
-    .wallTexture = LoadTexture(WALL_PATH),                      \
-    .logoTexture.width = 200,                                   \
-    .logoTexture.height = 200,                                  \
-    .changeOptionSound = LoadSound(CHANGE_OPTION_SOUND),        \
-    .selectOptionSound = LoadSound(SELECT_OPTION_SOUND),        \
-    .lightningSound = LoadSound(LIGHTNING_SOUND),               \
-    .fireAnimImage = LoadImageAnim(FIRE_ANIM_PATH, &animFrames),\
-    .rainAnimImage = LoadImageAnim(RAIN_ANIM_PATH, &animFrames),\
-    .backgroundMusic = LoadMusicStream(BACKGROUND_MENU_MUSIC)   \
-})
+} MenuSounds;
 
 typedef enum {
     OPTION_SINGLEPLAYER,
     OPTION_MULTIPLAYER,
     OPTION_OPTIONS,
     OPTION_EXIT
-    }    MenuOption;
+} MenuOption;
 
-
-// Updates
 MenuData* menu_screen(void);
-void UpdateRaining(Sound lightning);
-void UpdateOptions(MenuOption* selectedOptionPtr, Sound change_option, Sound select_option);
 
-
-// Draws
-
-void DrawBackground(Texture2D logo, Texture2D wall, Texture2D texFireAnim, Texture2D texRain, int selectedOption);
+// ==============================================================
+// INITIALIZATION
+void InitSounds(void);
+void InitData(void);
+//================================================================
+// UPDATES
+void UpdateRaining(void);
+void UpdateOptions(void);
+void UpdateFrames(Texture2D, Image, Texture2D, Image);
+//================================================================
+// DRAWS
+void UpdateFrameCounters(MenuData* menuDataPtr, Image fireAnim, Image rain);
+void DrawBackground(Texture2D logo, Texture2D wall, Texture2D texFireAnim, Texture2D rainTexture);
 void DrawOption(const char *text, Rectangle optionRect, Color color);
 void DrawAllOptions(int selectedOption);
 void DrawWorldSettings(int selectedOption);
 void startSinglePlayer(void);
-
+//================================================================
 #endif

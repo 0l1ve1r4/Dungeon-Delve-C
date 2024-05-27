@@ -43,7 +43,7 @@ void debug_log(char *message, char* escape_code){
         text = "INFO";}
     
 
-    printf("%s[%s]%s%s", escape_code, text, RESET, message);
+    printf("%s[%s]%s %s", escape_code, text, RESET, message);
 }
 
 void ShowControls(void)

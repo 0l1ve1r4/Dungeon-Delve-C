@@ -27,7 +27,7 @@ Camera2D InitPlayerCamera(Player *player){
 
 }
 
-void UpdatePlayerCamera(Camera2D *camera, Player *player, float delta, int width, int height) {
+void UpdatePlayerCamera(Camera2D *camera, Player *player, float delta) {
     float minSpeed = 30 * (float) (camera->zoom * 2);
     static float minEffectLength = 10; 
     static float fractionSpeed = 0.8f;
@@ -43,7 +43,7 @@ void UpdatePlayerCamera(Camera2D *camera, Player *player, float delta, int width
         else if (camera->zoom < minZoom) camera->zoom = minZoom;
     }
 
-    camera->offset = (Vector2){ width/2.0f, height/2.0f };
+    camera->offset = (Vector2){ SCREEN_WIDTH/2.0f, SCREEN_HEIGHT/2.0f };
     Vector2 diff = Vector2Subtract(player->entity.position, camera->target);
     float length = Vector2Length(diff);
     

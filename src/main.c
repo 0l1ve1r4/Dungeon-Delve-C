@@ -25,9 +25,9 @@
 #include "utils/utils.h"
 
 
-
 void UpdateGameVariables(GameVariables *game_variables);
 void LoadingWindow(void);
+MapNode* GenerateNewMap(int map_size);
 
 int main(void)
 {    
@@ -59,9 +59,15 @@ int main(void)
         //
         GameVar->update(GameVar); 
         Player->update(Player, GameVar->delta_time, GameVar->current_frame);
-        Player->updateCamera(&Camera, Player, GameVar->delta_time, SCREEN_WIDTH, SCREEN_HEIGHT);
+        Player->updateCamera(&Camera, Player, GameVar->delta_time);
         TileMap->updateEnemies(TileMap, GameVar->delta_time, GameVar->current_frame, Player);
-        CollisionsReturnType cType = TileMap->updateCollisions(Player, TileMap);
+        int cType = TileMap->updateCollisions(Player, TileMap);
+        if (cType == STAIR) {
+            free(TileMap);
+            TileMap = GenerateNewMap(MapInfo->MapSize);
+            LoadingWindow();
+        }
+
         //
         //==================================================================================
         // Draw
@@ -124,4 +130,15 @@ void LoadingWindow(void) {
             DrawText("Loading...", SCREEN_WIDTH / 2 - 50, SCREEN_HEIGHT / 2, 20, WHITE);
         EndDrawing();
     }
+}
+
+MapNode* GenerateNewMap(int map_size) {
+
+    MapNode* TileMapGraph = InitMap(map_size);
+    TileMapGraph->updateEnemies = &UpdateEnemiesMap;
+    TileMapGraph->updateCollisions = &UpdateMapCollision;
+    TileMapGraph->drawEnemies = &DrawEnemyMap;
+    TileMapGraph->drawMap = &RenderMap;
+
+    return TileMapGraph;
 }

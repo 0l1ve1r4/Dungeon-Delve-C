@@ -67,7 +67,7 @@ struct Player {
     int current_animation;  // Current animation of the player
 
     void (*update)(Player*, float, int);  // Function pointer to update the player
-    void (*updateCamera)(Camera2D*, Player*, float, int, int);
+    void (*updateCamera)(Camera2D*, Player*, float);
     void (*draw)(Player*);                // Function pointer to draw the player
 
 };
