@@ -45,7 +45,7 @@
 //
 #define DEAD_ANIMATION 9
 //
-#define RENDER_DISTANCE 13
+#define RENDER_DISTANCE 14
 #define PLAYER_SIZE (__TILE_SIZE * 2)
 
 Player* InitPlayer(MapNode *Map);

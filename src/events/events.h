@@ -14,33 +14,21 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef RENDER_H
-#define RENDER_H
+#ifndef EVENTS_H
+#define EVENTS_H
 
-#include "../defs.h"
-#include "../structs.h"
-#include "../utils/utils.h"
-#include "../entity/player.h"
+#include "../render/render.h"
+#include "../map/maps.h"
+#include "../menu.h"
 
+int PauseEvent(void);
+void LoadingWindow(void);
 
-typedef enum {
-
-    BLOCKED = 0x00,
-    UNBLOCKED = 0x01,
-    STAIR = 0x02,
-    HOLE = 0x03,
-
-} CollisionsReturnType;
+void HandlePlayerCollision(Player* player, int collisionType, MenuData* MapInfo,  MapNode* TileMap);
+void handleOptionSelection(MenuData* menuData, MenuSounds* menuSounds);
+void handleWorldSettings(MenuData* menuData, MenuSounds* menuSounds);
+void handleDifficultySettings(MenuData* menuData, MenuSounds* menuSounds);
+void UpdateOptions(MenuData* menuData, MenuSounds* menuSounds);
 
 
-void RenderMap(MapNode* nodes, Camera2D camera);
-int UpdateMapCollision(Player *player, MapNode *map);
-
-// CAMERA RELATED - FUNCTIONS //
-Camera2D InitPlayerCamera(Player *player);
-void UpdatePlayerCamera(Camera2D *camera, Player *player, float delta);
-
-
-
-
-#endif
+#endif // EVENTS_H

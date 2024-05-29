@@ -17,6 +17,7 @@
         "UI.C": "cpp",
         "entity.h": "c",
         "render.h": "c",
-        "array": "c"
+        "array": "c",
+        "utils.h": "c"
     }
 }

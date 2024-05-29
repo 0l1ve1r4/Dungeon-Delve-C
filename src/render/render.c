@@ -69,6 +69,10 @@ int UpdateMapCollision(Player *player, MapNode *map){
                     return STAIR;
                 }
 
+                else if (map->tile_info[X][Y].isHole){
+                    return HOLE;
+                }
+
                 else return BLOCKED;
             
             }

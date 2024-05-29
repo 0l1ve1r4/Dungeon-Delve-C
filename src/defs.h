@@ -35,12 +35,12 @@
 //
 #define ARRAY_LEN(arr) (sizeof(arr) / sizeof(arr[0]))
 #define GAME_VERSION "VERSION: 0.1.0"
-#define SCREEN_WIDTH 1200
-#define SCREEN_HEIGHT 650
+#define SCREEN_WIDTH 1400
+#define SCREEN_HEIGHT 750
 #define SCREEN_TITLE "Dungeon Delve C"
 #define TARGET_FPS 120
 #define __TILE_SIZE 16
-#define FOG_RADIUS  200
+#define FOG_RADIUS  400
 #define GLOBAL_FRAME_SPEED 12
 #define BACKGROUND_MUSIC "res/sounds/background.mp3"
 //

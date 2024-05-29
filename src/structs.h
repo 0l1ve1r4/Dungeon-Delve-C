@@ -18,6 +18,7 @@
 #define STRUCTS_H
 
 #include "defs.h"
+#include "stdint.h"
 
 //==============================================================================
 // Forward declaration of the structs, this is necessary to avoid circular      
@@ -104,6 +105,38 @@ struct GameVariables{
     void (*update)(GameVariables*); // Function pointer to update the game variables (delta_time, frame_counter, current_frame
 
 };
+
+
+typedef struct {
+    bool isRaining;
+    bool isInWorldSettings;
+    bool isInDifficultySettings;
+    int MapSize;
+    int MapSeed;
+    int MaxSeed;
+    int MapMaxSize;
+    int selectedOption;
+    int verticalCenter;
+    int animFrames; 
+    uint32_t nextFrameDataOffset;
+    uint16_t map_level;
+    uint8_t difficulty;
+    uint8_t currentAnimFrame;      
+    uint8_t frameDelay;            
+    uint8_t frameCounter;
+    float RainingAlpha;
+    MapNode* TileMapGraph;
+    Color backgroundColor;
+} MenuData;
+
+typedef struct {
+    Sound changeOptionSound;
+    Sound selectOptionSound;
+    Sound lightningSound;
+    Music backgroundMusic;
+} MenuSounds;
+
+
 
 
 

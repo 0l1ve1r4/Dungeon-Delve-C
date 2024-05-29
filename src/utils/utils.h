@@ -20,11 +20,12 @@
 #include "../defs.h"
 #include "../structs.h"
 #include "../entity/player.h"
+#include "../menu.h"
 
 void debug_log(char *message, char* escape_code);
 
 // GAME INFO - FUNCTIONS //
-void GetGameInfo(Player* player);
+void GetGameInfo(Player* player,  MenuData* MapInfo);
 void ShowControls(void);
 void InitRandomSeed(void* value);
 void DrawFog(Camera2D camera, int radius);

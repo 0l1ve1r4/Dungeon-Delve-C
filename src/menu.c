@@ -17,26 +17,25 @@
 #include "menu.h"
 #include "entity/player.h"
 #include "entity/enemy.h"
-#include "render/render.h"
 
 static MenuData* menuData;
 static MenuSounds* menuSounds;
  
-const char *defaultOptions[MAX_OPTIONS] = {
+static const char *defaultOptions[MAX_OPTIONS] = {
     "SINGLEPLAYER", 
     "MULTIPLAYER", 
     "OPTIONS", 
     "EXIT"
 };
 
-const char *difficultyOptions[MAX_OPTIONS] = {
+static const char *difficultyOptions[MAX_OPTIONS] = {
     "PYTHON 'DEV'",  
     "JAVA LOVER", 
     "C ENTHUSIAST",
     "I CODE IN ASSEMBLY"
 };
 
-const char* worldOptions[MAX_OPTIONS] = {
+static const char* worldOptions[MAX_OPTIONS] = {
     "MAP SIZE", 
     "MAP SEED", 
     "BACK", 
@@ -50,19 +49,19 @@ MenuData* menu_screen(void) {
     InitData(); // Menu Variables
     InitSounds(); // Menu Sounds/Music
         
-    Texture2D logoTexture = LoadTexture(LOGO_PATH); logoTexture.width = 200; logoTexture.height = 200;
+    Texture2D logoTexture = LoadTexture(LOGO_PATH); logoTexture.width = 250; logoTexture.height = 250;
     Texture2D wallTexture = LoadTexture(WALL_PATH); wallTexture.width = 32; wallTexture.height = 32;
     
     Image fireImage = LoadImageAnim(FIRE_ANIM_PATH, &menuData->animFrames); Texture2D fireTexture = LoadTextureFromImage(fireImage);
     Image rainImage = LoadImageAnim(RAIN_ANIM_PATH, &menuData->animFrames); Texture2D rainTexture = LoadTextureFromImage(rainImage);
-
+    
     PlayMusicStream(menuSounds->backgroundMusic);
 
     while (1) {  
         UpdateFrames(fireTexture, fireImage, rainTexture, rainImage);
         UpdateMusicStream(menuSounds->backgroundMusic);
         UpdateRaining();
-        UpdateOptions();
+        UpdateOptions(menuData, menuSounds);
         //==============================================================================
         // Draw
 
@@ -70,10 +69,11 @@ MenuData* menu_screen(void) {
 
         DrawBackground(logoTexture, wallTexture, fireTexture, rainTexture);
 
-        if (menuData->isInWorldSettings) DrawWorldSettings(menuData->selectedOption);
+        if (menuData->isInDifficultySettings) DrawDifficultyOptions(menuData->selectedOption);
+        else if (menuData->isInWorldSettings) DrawWorldSettings(menuData->selectedOption);
         else if (!menuData->isInWorldSettings) DrawAllOptions(menuData->selectedOption);
 
-        DrawCircleGradient(menuData->verticalCenter+300, 0, 1000, Fade(menuData->backgroundColor, 0.f), Fade(menuData->backgroundColor, 10.0f));    
+        DrawCircleGradient(menuData->verticalCenter+300, 0, 2 * SCREEN_WIDTH, Fade(menuData->backgroundColor, 0.f), Fade(menuData->backgroundColor, 10.0f));    
         //
         EndDrawing();
 
@@ -88,6 +88,7 @@ void InitData(void){
     menuData = (MenuData*)malloc(sizeof(MenuData));
     menuData->isRaining = false;
     menuData->isInWorldSettings = false;
+    menuData->isInDifficultySettings = false;
     menuData->MapSize = 100;
     menuData->MapSeed = 29072022;
     menuData->MaxSeed = 99999999;
@@ -96,6 +97,8 @@ void InitData(void){
     menuData->verticalCenter = (SCREEN_HEIGHT - 40 * MAX_OPTIONS) / 2;
     menuData->animFrames = 0; 
     menuData->nextFrameDataOffset = 0;
+    menuData->map_level = 0;
+    menuData->difficulty = 0;
     menuData->currentAnimFrame = 0;      
     menuData->frameDelay = 10;            
     menuData->frameCounter = 0;
@@ -115,77 +118,7 @@ void InitSounds(void){
     SetMusicVolume(menuSounds->backgroundMusic, 0.5f);
 }
 
-void UpdateFrames(Texture2D fireTexture, Image fireImage, Texture2D rainTexture, Image rainImage){
-    menuData->frameCounter++;
-    if (menuData->frameCounter >= menuData->frameDelay) {
-        menuData->currentAnimFrame = (menuData->currentAnimFrame + 1) % menuData->animFrames;
-        menuData->nextFrameDataOffset = fireImage.width * fireImage.height * 4 * menuData->currentAnimFrame;
-            UpdateTexture(fireTexture, ((unsigned char *)fireImage.data) + menuData->nextFrameDataOffset);
-            UpdateTexture(rainTexture, ((unsigned char *)rainImage.data) + menuData->nextFrameDataOffset);
-            menuData->frameCounter = 0;
-        }
-}
-
-
-void UpdateOptions(){
-
-        if (IsKeyPressed(KEY_DOWN)) {
-            menuData->selectedOption = (menuData->selectedOption + 1) % MAX_OPTIONS;
-            PlaySound(menuSounds->changeOptionSound);
-
-        } else if (IsKeyPressed(KEY_UP)) {
-            menuData->selectedOption = (menuData->selectedOption - 1 + MAX_OPTIONS) % MAX_OPTIONS;
-            PlaySound(menuSounds->changeOptionSound);
-        }
-
-        if (IsKeyPressed(KEY_ENTER) && !menuData->isInWorldSettings) {
-            PlaySound(menuSounds->selectOptionSound);
-            switch (menuData->selectedOption) {
-                
-                case OPTION_SINGLEPLAYER:
-                    menuData->isInWorldSettings = true;
-                    break;
-
-                case OPTION_MULTIPLAYER:
-                    menuData->isInWorldSettings = true;
-                    break;
-                
-                case OPTION_OPTIONS:
-                    // Implement options logic
-                    break;
-                
-                case OPTION_EXIT:
-                    usleep(500000); // Sleep for 0.5 second
-                    CloseWindow();
-                    break;
-            }
-        }
-
-        else if (IsKeyPressed(KEY_ENTER) && menuData->isInWorldSettings) {
-            PlaySound(menuSounds->selectOptionSound);
-            switch (menuData->selectedOption) {
-                case 0:
-                    menuData->MapSize += menuData->MapSize >= menuData->MapMaxSize ? -menuData->MapMaxSize : 50;
-                    break;
-                
-                case 1:
-                    menuData->MapSeed = rand() % menuData->MaxSeed;
-                    break;
-                
-                case 2:
-                    menuData->isInWorldSettings = false;
-                    break;
-                
-                case 3:
-                    startSinglePlayer();
-                    break;
-            }
-        }
-    
-}
-
 void UpdateRaining(){
-
     if (menuData->RainingAlpha > 0.0f && menuData->isRaining) {
         menuData->RainingAlpha -= 0.1f;
         return;
@@ -200,6 +133,17 @@ void UpdateRaining(){
     }
 }
 
+void UpdateFrames(Texture2D fireTexture, Image fireImage, Texture2D rainTexture, Image rainImage){
+    menuData->frameCounter++;
+    if (menuData->frameCounter >= menuData->frameDelay) {
+        menuData->currentAnimFrame = (menuData->currentAnimFrame + 1) % menuData->animFrames;
+        menuData->nextFrameDataOffset = fireImage.width * fireImage.height * 4 * menuData->currentAnimFrame;
+            UpdateTexture(fireTexture, ((unsigned char *)fireImage.data) + menuData->nextFrameDataOffset);
+            UpdateTexture(rainTexture, ((unsigned char *)rainImage.data) + menuData->nextFrameDataOffset);
+            menuData->frameCounter = 0;
+        }
+}
+
 void DrawBackground(Texture2D logoTexture, Texture2D wallTexture, Texture2D fireTexture, Texture2D rainTexture){
 
 
@@ -207,12 +151,12 @@ void DrawBackground(Texture2D logoTexture, Texture2D wallTexture, Texture2D fire
 
         int fire_y = (menuData->selectedOption - 1.3) * 60;
 
-        DrawTexture(rainTexture, menuData->verticalCenter-250, 0, WHITE);
-        DrawTexture(logoTexture, menuData->verticalCenter+240, 10, WHITE);
-        DrawTexture(fireTexture, menuData->verticalCenter+130, menuData->verticalCenter + fire_y, WHITE);
+        DrawTexture(rainTexture, menuData->verticalCenter-280, 0, WHITE);
+        DrawTexture(logoTexture, menuData->verticalCenter+260, 10, WHITE);
+        DrawTexture(fireTexture, menuData->verticalCenter+230, menuData->verticalCenter + fire_y, WHITE);
         DrawTexture(fireTexture, menuData->verticalCenter+480, menuData->verticalCenter + fire_y, WHITE);
 
-        for (int i = SCREEN_HEIGHT/ 2 + 290; i < SCREEN_HEIGHT; i += __TILE_SIZE)
+        for (int i = SCREEN_HEIGHT/ 2 + 350; i < SCREEN_HEIGHT; i += __TILE_SIZE)
             for (int j = 0; j < SCREEN_WIDTH; j += __TILE_SIZE)
                 DrawTexture(wallTexture, j, i, WHITE);        
 
@@ -221,6 +165,19 @@ void DrawBackground(Texture2D logoTexture, Texture2D wallTexture, Texture2D fire
 
         DrawCircleGradient(menuData->verticalCenter+300, 500, 1000, Fade(WHITE, 0.f), Fade(WHITE, menuData->RainingAlpha));
 
+}
+
+void DrawDifficultyOptions(int selectedOption){
+    for (int i = 0; i < MAX_OPTIONS; i++) {
+        Vector2 rectPos = {SCREEN_WIDTH / 2 - 200, menuData->verticalCenter + 60 * i};
+        Rectangle optionRect = {rectPos.x, rectPos.y, 400, 40};
+
+        Color color = i == selectedOption ? RED : ColorFromNormalized((Vector4){0.44f, 0.44f, 0.44f, 1.0f});
+        DrawOption(difficultyOptions[i], optionRect, color);
+
+        if (i == MAX_OPTIONS - 1) 
+            DrawText("SELECT YOUR DIFFICULTY", rectPos.x - 70, rectPos.x + 100, 40, WHITE);
+    }
 }
 
 void DrawOption(const char *text, Rectangle optionRect, Color color) {

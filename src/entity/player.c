@@ -18,6 +18,9 @@
 #include "paths.h"
 #include "../render/render.h"
 
+static int last_attack = 0;
+static int frame_counter = 0;
+
 Player* InitPlayer(MapNode *Map){
     Player* player = (Player*)malloc(sizeof(Player));
 
@@ -55,19 +58,39 @@ Player* InitPlayer(MapNode *Map){
 
 
 void UpdatePlayer(Player *player, float deltaTime, int currentFrame) {
-    player->entity.last_position = player->entity.position;
+    player->entity.last_position = player->entity.position;                    // Verify if player is attacking
 
-    isPlayerMoving(player, deltaTime, currentFrame);
-    isAttacking(player);
+    if (player->entity.isAttacking){         // If player is attacking, no need to check 
+        player->entity.isMoving = false;    // if player is moving, already set to false
 
-    if (!player->entity.isMoving && !player->entity.isAttacking) {
-        PlayIdleAnimation(player, currentFrame);
-        return; 
     }
-                
-    UpdateEntityFrameRec(&player->entity, currentFrame, player->last_animation, 
-    PLAYER_SPRITESHEET_WIDTH, PLAYER_SPRITESHEET_HEIGHT);
-    player->last_animation = player->last_animation;
+
+    else
+        isAttacking(player);
+        if (!player->entity.isAttacking)
+            isPlayerMoving(player, deltaTime, currentFrame);
+
+
+    if (!player->entity.isMoving && !player->entity.isAttacking) 
+        PlayIdleAnimation(player, currentFrame);
+
+    // if (player->entity.isMoving) or (player->entity.isAttacking) /
+    else {         
+        UpdateEntityFrameRec(&player->entity, currentFrame, player->last_animation, 
+        PLAYER_SPRITESHEET_WIDTH, PLAYER_SPRITESHEET_HEIGHT);
+        player->last_animation = player->last_animation;
+
+
+        if (player->entity.isAttacking)
+            frame_counter++; 
+
+        if (frame_counter >= PLAYER_FRAME_SPEED * 1.5) {
+            player->entity.isAttacking = false;  
+            frame_counter = 0;
+        }
+    
+    }
+
 }
 
 void updatePlayerPosition(Player *player, float deltaX, float deltaY, int animation) {
@@ -99,7 +122,18 @@ void isPlayerMoving(Player *player, float deltaTime, int currentFrame) {
 }
 
 void isAttacking(Player *player) {
-    if (IsKeyDown(KEY_SPACE)) {
+
+    // Update Stamina //
+    if (GetTime() - last_attack >= 5.0 && player->entity.stamina < PLAYER_BASE_STAMINA) 
+        player->entity.stamina += 1.0;
+
+    if (player->entity.stamina <= 0 || GetTime() - last_attack < 1.0){
+        player->entity.isAttacking = false;
+        return;
+    }
+
+    // Verify if player is attacking //
+    else if (IsKeyDown(KEY_SPACE)) {
         switch (player->last_animation) {
             case SIDE_WALK_ANIMATION:
                 player->last_animation = SIDE_ATTACK_ANIMATION;
@@ -111,12 +145,13 @@ void isAttacking(Player *player) {
                 player->last_animation = FRONT_ATTACK_ANIMATION;
                 break;
         }
+
         player->entity.isAttacking = true;
-        if (!IsSoundPlaying(player->attack_sound)) PlaySound(player->attack_sound);
-        
+        player->entity.stamina -= 1;
+        last_attack = GetTime();        
         return;
     }
-    else player->entity.isAttacking = false;
+    
 }
 
 void DrawPlayer(Player *player) { 

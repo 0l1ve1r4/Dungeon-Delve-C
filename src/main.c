@@ -23,80 +23,94 @@
 #include "map/maps.h"
 #include "render/render.h"
 #include "utils/utils.h"
+#include "events/events.h"
 
+void UpdateGameVariables(GameVariables*);
+void FreeMemory(MenuData* MapInfo);
 
-void UpdateGameVariables(GameVariables *game_variables);
-void LoadingWindow(void);
 MapNode* GenerateNewMap(int map_size);
 
 int main(void)
 {    
-    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE);
-    SetTargetFPS(TARGET_FPS);
-    InitAudioDevice();             
+    // ===========================================================================================
+    // I dont like to use goto statements, but in this case it is the best easier solution      //
+    // to avoid memory leaks and to keep the code clean.                                        //
+    //                                                                                          //
+    MENU:                                                                                       //
+        InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE);                                  //
+        SetTargetFPS(TARGET_FPS);                                                               //
+        InitAudioDevice();                                                                      //
+        MenuData* MapInfo = menu_screen();                                                      //
+        LoadingWindow();                                                                        //
+    //                                                                                          //
+    // ===========================================================================================
 
-    MenuData* MapInfo = menu_screen();
-    MapNode* TileMap = MapInfo->TileMapGraph;
-
-    Player* Player = InitPlayer(TileMap);
+    GameVariables *GameVar = &(GameVariables){ .update = UpdateGameVariables }; // Not in the heap
+    MapNode *TileMap = MapInfo->TileMapGraph;
+    Player *Player = InitPlayer(TileMap);
     Camera2D Camera = InitPlayerCamera(Player);
-    GameVariables* GameVar = &(GameVariables){ .update = UpdateGameVariables };
 
-    Music backgroundMusic = LoadMusicStream(BACKGROUND_MUSIC);
+    InitRandomSeed(NULL); // If not changed, always generate the same map
 
-    PlayMusicStream(backgroundMusic);
-    InitRandomSeed(NULL);
-    LoadingWindow();
+    Music backgroundMusic = LoadMusicStream(BACKGROUND_MUSIC); PlayMusicStream(backgroundMusic);
 
     //=======================================================================================
     // Main game loop
     //=======================================================================================    
-    while (!WindowShouldClose())
+    while (1)
     {
         //==================================================================================
-        // Update
+        // Update - This sectin use some function pointers to update the game variables
         UpdateMusicStream(backgroundMusic);
-        //
+
         GameVar->update(GameVar); 
         Player->update(Player, GameVar->delta_time, GameVar->current_frame);
         Player->updateCamera(&Camera, Player, GameVar->delta_time);
         TileMap->updateEnemies(TileMap, GameVar->delta_time, GameVar->current_frame, Player);
-        int cType = TileMap->updateCollisions(Player, TileMap);
-        if (cType == STAIR) {
-            free(TileMap);
-            TileMap = GenerateNewMap(MapInfo->MapSize);
-            LoadingWindow();
+        
+        HandlePlayerCollision(Player, TileMap->updateCollisions(Player, TileMap), MapInfo, TileMap);
+        
+        // Verify if the player wants to pause the game
+        switch (PauseEvent()) {
+            case 1:
+                FreeMemory(MapInfo); goto MENU; break;
+            case 2:
+                goto END; break;
         }
 
-        //
-        //==================================================================================
+        //================================================================================
         // Draw
         BeginDrawing();
             ClearBackground(BLACK);
             
             BeginMode2D(Camera);
-                    
-                TileMap->drawMap(TileMap, Camera);
-                TileMap->drawEnemies(TileMap);
-                Player->draw(Player);
-                DrawFog(Camera, FOG_RADIUS);
+                
+                TileMap->drawMap(TileMap, Camera);  // function pointer
+                TileMap->drawEnemies(TileMap);      // function pointer
+                Player->draw(Player);               // function pointer
+                DrawFog(Camera, FOG_RADIUS);        // static function
 
             EndMode2D();
 
-            ShowControls();
-            GetGameInfo(Player);
+            ShowControls();                         // static function
+            GetGameInfo(Player, MapInfo);           // static function
         EndDrawing();
         //
-        //==================================================================================
+        //================================================================================
     }
 
-    //==================================================================================
-    UnloadMusicStream(backgroundMusic);
-    CloseAudioDevice();
-    CloseWindow();        // Close window and OpenGL context
-    free(TileMap);
-    free(Player);
-    //==================================================================================
+    //====================================================================================
+    // Another goto, be aware of future changes                                         //
+    //                                                                                  //
+    END:                                                                                //  
+        UnloadMusicStream(backgroundMusic);                                             //
+        CloseAudioDevice();                                                             //  
+        CloseWindow();                                                                  //
+        free(TileMap);                                                                  //
+        free(MapInfo);                                                                  //
+        free(Player);                                                                   //
+    //                                                                                  //
+    //====================================================================================
 
     return 0;
 }
@@ -105,14 +119,12 @@ void UpdateGameVariables(GameVariables *game_variables) {
     game_variables->delta_time = GetFrameTime();
     game_variables->frame_counter++;
 
-    // Reset the frame counter if it exceeds
     if (game_variables->frame_counter >= (TARGET_FPS/GLOBAL_FRAME_SPEED)) {
         game_variables->frame_counter = 0;
     }
 
-    // Update the current frame
     if (game_variables->frame_counter == 0) {
-        if (game_variables->current_frame > 5) {
+        if (game_variables->current_frame >= 3) {
             game_variables->current_frame = 0;
         } else {
             game_variables->current_frame++;
@@ -120,25 +132,9 @@ void UpdateGameVariables(GameVariables *game_variables) {
     }
 }
 
-void LoadingWindow(void) {
-    time_t start_time = time(NULL);
-    int max_loading_seconds = 2;
-
-    while (!WindowShouldClose() && time(NULL) - start_time < max_loading_seconds) {
-        BeginDrawing();
-            ClearBackground(BLACK);
-            DrawText("Loading...", SCREEN_WIDTH / 2 - 50, SCREEN_HEIGHT / 2, 20, WHITE);
-        EndDrawing();
-    }
-}
-
-MapNode* GenerateNewMap(int map_size) {
-
-    MapNode* TileMapGraph = InitMap(map_size);
-    TileMapGraph->updateEnemies = &UpdateEnemiesMap;
-    TileMapGraph->updateCollisions = &UpdateMapCollision;
-    TileMapGraph->drawEnemies = &DrawEnemyMap;
-    TileMapGraph->drawMap = &RenderMap;
-
-    return TileMapGraph;
+void FreeMemory(MenuData* MapInfo) {
+    free(MapInfo);
+    CloseWindow();
+    CloseAudioDevice();
+    
 }

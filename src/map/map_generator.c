@@ -38,8 +38,6 @@ void GenerateMap(MapNode* TileMap) {
     InitObjects(TileMap);
     InitBorders(TileMap);
 
-    
-
     TileMap->num_enemies =  TileMap->matrix_width / 20;
     TileMap->enemies = malloc(sizeof(Enemy*) * TileMap->num_enemies );
 
@@ -149,7 +147,7 @@ void ClearSpawnPoint(MapNode* TileMap){
 
 void InitObjects(MapNode* TileMap) {
 
-    int num_objects = TileMap->matrix_width / 20;
+    int num_objects = TileMap->matrix_width / 10;
 
     for (int i = 0; i < num_objects; i++) {
 

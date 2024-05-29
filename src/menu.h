@@ -20,7 +20,7 @@
 #include "defs.h"
 #include "map/maps.h"
 #include "utils/utils.h"
-
+#include "events/events.h"
 
 #define LOGO_PATH "res/static/background.png"
 #define WALL_PATH "res/static/wall.png"
@@ -34,32 +34,6 @@
 
 #define MAX_OPTIONS 4
 #define MAX_INPUT_CHARS 9
-
-typedef struct {
-    bool isRaining;
-    bool isInWorldSettings;
-    int MapSize;
-    int MapSeed;
-    int MaxSeed;
-    int MapMaxSize;
-    int selectedOption;
-    int verticalCenter;
-    int animFrames; 
-    uint32_t nextFrameDataOffset;
-    uint8_t currentAnimFrame;      
-    uint8_t frameDelay;            
-    uint8_t frameCounter;
-    float RainingAlpha;
-    MapNode* TileMapGraph;
-    Color backgroundColor;
-} MenuData;
-
-typedef struct {
-    Sound changeOptionSound;
-    Sound selectOptionSound;
-    Sound lightningSound;
-    Music backgroundMusic;
-} MenuSounds;
 
 typedef enum {
     OPTION_SINGLEPLAYER,
@@ -77,12 +51,12 @@ void InitData(void);
 //================================================================
 // UPDATES
 void UpdateRaining(void);
-void UpdateOptions(void);
 void UpdateFrames(Texture2D, Image, Texture2D, Image);
+
 //================================================================
 // DRAWS
-void UpdateFrameCounters(MenuData* menuDataPtr, Image fireAnim, Image rain);
 void DrawBackground(Texture2D logo, Texture2D wall, Texture2D texFireAnim, Texture2D rainTexture);
+void DrawDifficultyOptions(int selectedOption);
 void DrawOption(const char *text, Rectangle optionRect, Color color);
 void DrawAllOptions(int selectedOption);
 void DrawWorldSettings(int selectedOption);

@@ -52,7 +52,7 @@ void isEntityAlive(Entity* entity){
 
 void DrawEntityHealthBar(Entity entity_type, int entity_health, int entity_max_health){
     unsigned int HealBar_Y = entity_type.position.y - 10;
-    unsigned int HealthBar_X = entity_type.position.x - (entity_max_health);
+    unsigned int HealthBar_X = entity_type.position.x - (entity_max_health/3);
 
     unsigned int HealthBarHeight = HEALTH_BAR_HEIGHT;
     unsigned int HealthBarWidth = entity_max_health * __TILE_SIZE / entity_max_health;
@@ -72,13 +72,14 @@ void UpdateEntityPosition(Entity *entity, float deltaX, float deltaY){
 }
 
 void UpdateEntityFrameRec(Entity *entity, int currentFrame_x, int currentFrame_y,
-                int spriteSheetWidth, int spriteSheetHeight){  
+                            int spriteSheetWidth, int spriteSheetHeight){  
                                 
     entity->frameRec.x = (float)currentFrame_x * (float)entity->texture.width / spriteSheetWidth;
     entity->frameRec.y = (float)currentFrame_y * (float)entity->texture.height / spriteSheetHeight;
 }
 
 void DrawEntity(Entity entity, int entity_size, int entity_origin_x, int entity_origin_y, int base_health){
+    if (!entity.isAlive) return;
 
     Rectangle entityRec = (Rectangle){entity.position.x, entity.position.y, entity_size, entity_size};
     Vector2 entityOrigin = (Vector2){entity_origin_x, entity_origin_y};
@@ -86,6 +87,7 @@ void DrawEntity(Entity entity, int entity_size, int entity_origin_x, int entity_
     DrawEntityHealthBar(entity, entity.health, base_health);
     DrawTexturePro(entity.texture, entity.frameRec, entityRec, entityOrigin, 0, WHITE);
 
-    DrawRectangleLines(entityRec.x, entityRec.y, entity_size/2, entity_size/2, RED);
+    // Debug only
+    //DrawRectangleLines(entityRec.x, entityRec.y, entity_size/2, entity_size/2, RED);
 
 }

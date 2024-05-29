@@ -3,8 +3,8 @@
 clear
 
 OS="${1:-linux}"                            # Get first argument or default to "linux"
-INSTALL="${2}"                              # Get second argument 
-                                            #(to check if you already want to install the game) (windows only)
+INSTALL="${2}"                              # Get second argument  
+ZIP="${3}"                                  # Get third argument
 
 SOURCES=(                                   # Source files  
     "src/*.c"                               # Define them from the "leaf file"                    
@@ -12,10 +12,12 @@ SOURCES=(                                   # Source files
     "src/render/*.c"                        # recompiling all files every time
     "src/map/*.c"                           #
     "src/utils/*.c"                         #
+    'src/events/*.c'
 )
 
-
-FLAGS="-lraylib -lm"                        # raylib library
+#  By enabling -flto flag, perform optimizations across object files, 
+#  including removing unused functions. 
+FLAGS="-flto -lraylib -lm"                  # raylib library
 INCLUDE_DIR="/usr/local/include"            # raylib headers
 
 
@@ -72,7 +74,14 @@ if [ "$INSTALL" == "install" ]; then
 
 fi
 
+if [ "$ZIP" == "zip" ]; then
+    echo "Zipping..."
+    zip -r ../build.zip ../build
+    echo "Zipped successfully."
+fi
+
 if [[ "$OS" == "linux" && "$INSTALL" == "install" ]]; then # This is just to easy the testing process
     echo "Running..."
     ../build/DungeonDelveC 
 fi
+

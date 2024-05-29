@@ -60,15 +60,12 @@ void UpdateEnemy(Enemy *enemy, Player* player, float deltaTime, int currentFrame
     
     if (!enemy->entity.isAlive) return;
     
-    if (enemy->entity.health < 0){ 
-        enemy->Y_frame = 1;
-        PlaySound(enemy->entity.death_sound); }
-
-    
-    if (enemy->entity.health < 0 && currentFrame >= 6){
+    if (enemy->entity.health <= 0){ 
+        UnloadTexture(enemy->entity.texture);   // Unload the texture (make sure that you dont draw it anymore)
+        PlaySound(enemy->entity.death_sound);   // Play the death sound
         enemy->entity.isAlive = false;
-        UnloadTexture(enemy->entity.texture);
-        return;
+        enemy->Y_frame = 1;                     // Change the 'y' axis to the death animation
+    
     }
 
     enemy->entity.last_position = enemy->entity.position;

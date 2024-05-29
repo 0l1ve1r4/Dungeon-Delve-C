@@ -16,6 +16,12 @@
 
 #include "utils.h"
 
+typedef struct {
+    float value;
+    const char* format;
+    Color color;
+} EntityInfo;
+
 void debug_log(char *message, char* escape_code){
     
     char* RESET = "\033[0m";
@@ -52,44 +58,40 @@ void ShowControls(void)
     if (IsKeyPressed(KEY_C)) show = !show;
     if (!show) return;
 
+    char fps[10]; sprintf(fps, "FPS: %i", GetFPS());
+
     DrawText("Controls | 'C' to close:", 20, 20, 10, WHITE);
     DrawText("Move - W | A | S | D ", 40, 40, 10, WHITE);
     DrawText("Attack - SPACE", 40, 60, 10, WHITE);
     DrawText("Interact - E ", 40, 80, 10, WHITE);
+    DrawText(fps, 40, 100, 10, WHITE);    
+    
 }
 
-void GetGameInfo(Player* player) {
-    const int BUFFER_SIZE = 32;
-    const int INFO_COUNT = 5;
-    const int TEXT_SIZE = 10;
+void GetGameInfo(Player* player, MenuData* MapInfo) {
+    const uint8_t BUFFER_SIZE = 32;
+    const uint8_t INFO_COUNT = 6;
+    const uint8_t TEXT_SIZE = 10;
     char* texts[INFO_COUNT];
 
     for (int i = 0; i < INFO_COUNT; i++) 
         texts[i] = (char*)malloc(BUFFER_SIZE * sizeof(char));
 
-    float values[] = { (float)GetFPS(),
-        player->entity.health,
-        player->entity.stamina,
-        player->entity.mana,
-        player->entity.damage
+    EntityInfo entityInfos[] = {
+        {player->entity.health, "Health: %.1f", WHITE},
+        {player->entity.stamina, "Stamina: %.1f", WHITE},
+        {player->entity.mana, "Mana: %.1f", WHITE},
+        {player->entity.damage, "Strength: %.1f", WHITE},
+        {MapInfo->map_level, "Level: %.1f", WHITE},
+        {MapInfo->difficulty, "Difficulty: %.1f", WHITE}
     };
 
-    const char* formats[] = { "FPS: %.1f",
-        "Health: %.1f",
-        "Stamina: %.1f",
-        "Mana: %.1f",
-        "Strength: %.1f"
-    };
-
-    float right_corner = (float)SCREEN_WIDTH / 10 * 9.3;
-
+    float center = GetScreenWidth() / 4;
     for (int i = 0; i < INFO_COUNT; i++) {
-        sprintf(texts[i], formats[i], values[i]);
-        DrawText(texts[i], right_corner, i * 20, TEXT_SIZE, WHITE);
+        sprintf(texts[i], entityInfos[i].format, entityInfos[i].value);
+        DrawText(texts[i], center + (i*100), 1, TEXT_SIZE, entityInfos[i].color);
         free(texts[i]);
-    
     }
-
 }
 
 void InitRandomSeed(void* value){
