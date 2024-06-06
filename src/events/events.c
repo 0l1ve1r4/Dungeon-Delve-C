@@ -68,6 +68,9 @@ int PauseEvent(void){
     
     EndDrawing();
     }
+
+    return -1; // If gets here, something went wrong
+
 }
 
 void LoadingWindow(void) {

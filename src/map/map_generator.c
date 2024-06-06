@@ -39,10 +39,9 @@ void GenerateMap(MapNode* TileMap) {
     InitBorders(TileMap);
 
     TileMap->num_enemies =  TileMap->matrix_width / 20;
-    TileMap->enemies = malloc(sizeof(Enemy*) * TileMap->num_enemies );
+    TileMap->enemies = malloc(sizeof(Enemy*) * (size_t)TileMap->num_enemies );
 
-    unsigned int rand_x;
-    unsigned int rand_y;
+    int rand_x, rand_y;
 
     for (int i = 0; i < TileMap->num_enemies ; i++) {
         rand_x = rand() % TileMap->matrix_width;
@@ -50,9 +49,6 @@ void GenerateMap(MapNode* TileMap) {
 
         TileMap->enemies[i] = (Enemy*)InitEnemy(rand_x, rand_y);
     }
-
-    TileMap->enemies[0] = (Enemy*)InitEnemy(50, 50);
-
     
     GetTileInfo(TileMap);
 
@@ -82,7 +78,7 @@ void GetTileInfo(MapNode *TileMap){
                 TileMap->tile_info[i][j].blocking = true; 
         }
     }
-};
+}
 
 void InitWalls(MapNode* TileMap) { // Fill the map with Perlin noise
   

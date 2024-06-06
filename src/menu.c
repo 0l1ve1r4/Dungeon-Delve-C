@@ -35,14 +35,6 @@ static const char *difficultyOptions[MAX_OPTIONS] = {
     "I CODE IN ASSEMBLY"
 };
 
-static const char* worldOptions[MAX_OPTIONS] = {
-    "MAP SIZE", 
-    "MAP SEED", 
-    "BACK", 
-    "START GAME"
-};
-
-
 MenuData* menu_screen(void) {
 
 
@@ -147,7 +139,7 @@ void UpdateFrames(Texture2D fireTexture, Image fireImage, Texture2D rainTexture,
 void DrawBackground(Texture2D logoTexture, Texture2D wallTexture, Texture2D fireTexture, Texture2D rainTexture){
 
 
-        ClearBackground((Color)menuData->backgroundColor);
+        ClearBackground(menuData->backgroundColor);
 
         int fire_y = (menuData->selectedOption - 1.3) * 60;
 

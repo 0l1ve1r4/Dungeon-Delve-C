@@ -96,8 +96,12 @@ void GetGameInfo(Player* player, MenuData* MapInfo) {
 
 void InitRandomSeed(void* value){
     if (value == NULL){
-        unsigned long seed = mix(clock(), time(NULL), getpid());
-        srand(seed);
+        clock_t clock_time = clock();
+        time_t time_time = time(NULL);
+        pid_t pid = getpid();
+
+        srand(mix((unsigned long)clock_time, (unsigned long)time_time, (unsigned long)pid));
+
         return;
     }
 
@@ -124,15 +128,11 @@ void DrawFog(Camera2D camera, int radius){
     DrawCircleGradient(camera.target.x, camera.target.y, radius, Fade(BLACK, 0.6f), Fade(BLACK, 10.0f));
 }
 
-void UpdateFrameValues(int* current_frame, int* frame_counter, float* delta_time){
-
-    float frame_time = GetFrameTime();
-    delta_time = &frame_time;
+void UpdateFrameValues(int* current_frame, int* frame_counter){
 
     (*frame_counter)++;
 
     *frame_counter = (*frame_counter >= (TARGET_FPS/PLAYER_FRAME_SPEED)) ? 0 : *frame_counter;
     *current_frame = (*frame_counter == 0) ? ((*current_frame > 5) ? 0 : *current_frame + 1) : *current_frame;
-
 
 }

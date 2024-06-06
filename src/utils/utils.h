@@ -22,6 +22,10 @@
 #include "../entity/player.h"
 #include "../menu.h"
 
+#include <time.h>
+#include <sys/types.h>
+#include <unistd.h>
+
 void debug_log(char *message, char* escape_code);
 
 // GAME INFO - FUNCTIONS //
@@ -29,7 +33,7 @@ void GetGameInfo(Player* player,  MenuData* MapInfo);
 void ShowControls(void);
 void InitRandomSeed(void* value);
 void DrawFog(Camera2D camera, int radius);
-void UpdateFrameValues(int* current_frame, int* frame_counter, float* delta_time);
+void UpdateFrameValues(int* current_frame, int* frame_counter);
 
 unsigned long mix(unsigned long a, unsigned long b, unsigned long c);
 #endif

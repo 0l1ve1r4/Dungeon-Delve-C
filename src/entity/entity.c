@@ -56,7 +56,8 @@ void DrawEntityHealthBar(Entity entity_type, int entity_health, int entity_max_h
 
     unsigned int HealthBarHeight = HEALTH_BAR_HEIGHT;
     unsigned int HealthBarWidth = entity_max_health * __TILE_SIZE / entity_max_health;
-    unsigned int CurrentHealthBarWidth = entity_health * __TILE_SIZE / entity_max_health;
+    
+    int CurrentHealthBarWidth = entity_health * __TILE_SIZE / entity_max_health;
 
     Rectangle healthBar = (Rectangle){HealthBar_X, HealBar_Y, HealthBarWidth, HealthBarHeight};
     Rectangle fullHealthBar = (Rectangle){HealthBar_X, HealBar_Y, CurrentHealthBarWidth, HealthBarHeight};
@@ -71,7 +72,7 @@ void UpdateEntityPosition(Entity *entity, float deltaX, float deltaY){
     entity->isMoving = true;
 }
 
-void UpdateEntityFrameRec(Entity *entity, int currentFrame_x, int currentFrame_y,
+void UpdateEntityFrameRec(Entity *entity, unsigned int currentFrame_x, unsigned int currentFrame_y,
                             int spriteSheetWidth, int spriteSheetHeight){  
                                 
     entity->frameRec.x = (float)currentFrame_x * (float)entity->texture.width / spriteSheetWidth;

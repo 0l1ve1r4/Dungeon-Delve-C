@@ -73,11 +73,13 @@ int UpdateMapCollision(Player *player, MapNode *map){
                     return HOLE;
                 }
 
-                else return BLOCKED;
+                else return COLLISION;
             
             }
         }
     }
+
+    return NO_COLLISION;
 }
 
 

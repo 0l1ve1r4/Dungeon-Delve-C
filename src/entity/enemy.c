@@ -49,14 +49,14 @@ Enemy* InitEnemy(int spawn_x, int spawn_y){
 
 /// ====================================================================================================
 
-void UpdateEnemiesMap(MapNode *TileMap, float deltaTime, int currentFrame, Player* player) {
+void UpdateEnemiesMap(MapNode *TileMap, float deltaTime, unsigned int currentFrame, Player* player) {
     for (int i = 0; i < TileMap->num_enemies ; i++) {
         UpdateEnemy(TileMap->enemies[i], player, deltaTime, currentFrame);
 
     }
 }
 
-void UpdateEnemy(Enemy *enemy, Player* player, float deltaTime, int currentFrame) {
+void UpdateEnemy(Enemy *enemy, Player* player, float deltaTime, unsigned int currentFrame) {
     
     if (!enemy->entity.isAlive) return;
     
@@ -70,7 +70,7 @@ void UpdateEnemy(Enemy *enemy, Player* player, float deltaTime, int currentFrame
 
     enemy->entity.last_position = enemy->entity.position;
 
-    isMoving(enemy, player, deltaTime, currentFrame);
+    isMoving(enemy, player, deltaTime);
 
     if (!enemy->entity.isMoving) return;
 
@@ -123,7 +123,7 @@ void handleCollision(Enemy *enemy, Player* player, float deltaTime, int directio
     }
 }
 
-void isMoving(Enemy *enemy, Player* player, float deltaTime, int currentFrame) {
+void isMoving(Enemy *enemy, Player* player, float deltaTime) {
     enemy->entity.isMoving = true;
 
     bool LEFT = enemy->entity.position.x < player->entity.position.x;

@@ -64,10 +64,10 @@ struct Player {
     Entity entity;          // Entity struct to store the player information
     Sound* walk_sounds;     // Vector of the player walking
     Sound attack_sound;     // Sound of the player attacking
-    int last_animation;     // Last animation of the player
+    unsigned int last_animation;     // Last animation of the player
     int current_animation;  // Current animation of the player
 
-    void (*update)(Player*, float, int);  // Function pointer to update the player
+    void (*update)(Player*, float, unsigned int);  // Function pointer to update the player
     void (*updateCamera)(Camera2D*, Player*, float);
     void (*draw)(Player*);                // Function pointer to draw the player
 
@@ -93,7 +93,7 @@ struct MapNode{
     Enemy** enemies;         // Array of enemies in the map
 
     int (*updateCollisions)(Player*, MapNode*);          // Function pointer to update the collisions in the map
-    void (*updateEnemies)(MapNode*, float, int, Player*); // Function pointer to update the enemies in the map
+    void (*updateEnemies)(MapNode*, float, unsigned int, Player*); // Function pointer to update the enemies in the map
     void (*drawEnemies)(MapNode*);                        // Function pointer to draw the enemies in the map
     void (*drawMap)(MapNode*, Camera2D);                            // Function pointer to draw the map
 };
@@ -118,7 +118,7 @@ typedef struct {
     int selectedOption;
     int verticalCenter;
     int animFrames; 
-    uint32_t nextFrameDataOffset;
+    int nextFrameDataOffset;
     uint16_t map_level;
     uint8_t difficulty;
     uint8_t currentAnimFrame;      

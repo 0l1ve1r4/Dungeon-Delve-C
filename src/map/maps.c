@@ -18,9 +18,9 @@
 
 Vector2** SetTilePosition(int matrix_length, int tile_size){
 
-    Vector2** TilesPositions = (Vector2**)malloc(sizeof(Vector2*) * matrix_length);
+    Vector2** TilesPositions = (Vector2**)malloc((size_t)matrix_length * sizeof(Vector2*));
     for (int X = 0; X < matrix_length; X++) 
-        TilesPositions[X] = (Vector2*)malloc(sizeof(Vector2) * matrix_length);
+        TilesPositions[X] = (Vector2*)malloc((size_t)matrix_length * sizeof(Vector2));
     
     for (int Y = 0; Y < matrix_length; Y++)
         for (int X = 0; X < matrix_length; X++)
@@ -32,12 +32,12 @@ Vector2** SetTilePosition(int matrix_length, int tile_size){
 
 MapNode* InitMap(int map_lenght){
 
-    int** mapMatrix = (int**)malloc(map_lenght * sizeof(int*));
-    Tile** tileMatrix = (Tile**)malloc(map_lenght * sizeof(Tile*));
+    int** mapMatrix = (int**)malloc((size_t)map_lenght * sizeof(int*));
+    Tile** tileMatrix = (Tile**)malloc((size_t)map_lenght * sizeof(Tile*));
 
     for (int i = 0; i < map_lenght; i++){
-        mapMatrix[i] = (int*)malloc(map_lenght * sizeof(int));
-        tileMatrix[i] = (Tile*)malloc(map_lenght * sizeof(Tile));
+        mapMatrix[i] = (int*)malloc((size_t)map_lenght * sizeof(int));
+        tileMatrix[i] = (Tile*)malloc((size_t)map_lenght * sizeof(Tile));
     }
 
     MapNode* TileMap = (MapNode*)malloc(sizeof(MapNode));
@@ -61,7 +61,6 @@ MapNode* InitMap(int map_lenght){
     }
 
     GenerateMap(TileMap);
-
 
     return TileMap;
 

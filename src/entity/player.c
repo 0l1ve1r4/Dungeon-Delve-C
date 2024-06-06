@@ -57,19 +57,19 @@ Player* InitPlayer(MapNode *Map){
 }
 
 
-void UpdatePlayer(Player *player, float deltaTime, int currentFrame) {
+void UpdatePlayer(Player *player, float deltaTime, unsigned int currentFrame) {
     player->entity.last_position = player->entity.position;                    // Verify if player is attacking
 
     if (player->entity.isAttacking){         // If player is attacking, no need to check 
-        player->entity.isMoving = false;    // if player is moving, already set to false
+        player->entity.isMoving = false;     // if player is moving, already set to false
 
     }
 
-    else
+    else{
         isAttacking(player);
         if (!player->entity.isAttacking)
-            isPlayerMoving(player, deltaTime, currentFrame);
-
+            isPlayerMoving(player, deltaTime);
+    }
 
     if (!player->entity.isMoving && !player->entity.isAttacking) 
         PlayIdleAnimation(player, currentFrame);
@@ -93,12 +93,12 @@ void UpdatePlayer(Player *player, float deltaTime, int currentFrame) {
 
 }
 
-void updatePlayerPosition(Player *player, float deltaX, float deltaY, int animation) {
+void updatePlayerPosition(Player *player, float deltaX, float deltaY, unsigned int animation) {
     UpdateEntityPosition(&player->entity, deltaX, deltaY);
     player->last_animation = animation;
 }
 
-void isPlayerMoving(Player *player, float deltaTime, int currentFrame) {
+void isPlayerMoving(Player *player, float deltaTime) {
     player->entity.isMoving = false;
 
     float player_speed = player->entity.speed * deltaTime;
@@ -158,8 +158,8 @@ void DrawPlayer(Player *player) {
     DrawEntity(player->entity, PLAYER_SIZE, 8, 18, PLAYER_BASE_HEALTH);
 }
 
-void PlayIdleAnimation(Player *player, int currentFrame) {
-    int idle_animation = 0;
+void PlayIdleAnimation(Player *player, unsigned int currentFrame) {
+    unsigned int idle_animation = 0;
 
     switch (player->last_animation) {
         case SIDE_WALK_ANIMATION:

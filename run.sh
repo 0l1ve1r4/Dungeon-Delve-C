@@ -2,86 +2,82 @@
 
 clear
 
-OS="${1:-linux}"                            # Get first argument or default to "linux"
-INSTALL="${2}"                              # Get second argument  
-ZIP="${3}"                                  # Get third argument
+OS="${1:-linux}" # Get first argument or default to "linux"
+INSTALL="${2}"   # Get second argument
+ZIP="${3}"       # Get third argument
 
-SOURCES=(                                   # Source files  
-    "src/*.c"                               # Define them from the "leaf file"                    
-    "src/entity/*.c"                        # to the "root file" to avoid
-    "src/render/*.c"                        # recompiling all files every time
-    "src/map/*.c"                           #
-    "src/utils/*.c"                         #
-    'src/events/*.c'
+SOURCES=( # Source files
+	"src/*.c"        # Define them from the "leaf file"
+	"src/entity/*.c" # to the "root file" to avoid
+	"src/render/*.c" # recompiling all files every time
+	"src/map/*.c"    #
+	"src/utils/*.c"  #
+	'src/events/*.c'
 )
 
-#  By enabling -flto flag, perform optimizations across object files, 
-#  including removing unused functions. 
-FLAGS="-flto -lraylib -lm"                  # raylib library
-INCLUDE_DIR="/usr/local/include"            # raylib headers
-
-
+#  By enabling -flto flag, perform optimizations across object files,
+#  including removing unused functions.
+FLAGS="-flto -lraylib -lm" # raylib library
+GCC_FLAGS="-pedantic-errors -Wall -Wextra -Wsign-conversion"
+INCLUDE_DIR="/usr/local/include" # raylib headers
 
 case "$OS" in
-    
-    "win") 
-        LIBRARY_DIR="./lib"                 # raylib.dll
-        OUTPUT="./DungeonDelveC.exe"        # Output file (executable)
-        COMPILER="x86_64-w64-mingw32-gcc"   # sudo apt-get install mingw-w64s
-        ;;
 
-    "linux") 
-        LIBRARY_DIR="/usr/local/lib"        # libraylib.a
-        OUTPUT="./DungeonDelveC"
-        COMPILER="gcc"
-        ;;
-    *)
-        echo "Invalid OS. Please specify 'win' or 'linux'."
-        exit 1
-        ;;
+"win")
+	LIBRARY_DIR="./lib"               # raylib.dll
+	OUTPUT="./DungeonDelveC.exe"      # Output file (executable)
+	COMPILER="x86_64-w64-mingw32-gcc" # sudo apt-get install mingw-w64s
+	;;
+
+"linux")
+	LIBRARY_DIR="/usr/local/lib" # libraylib.a
+	OUTPUT="./DungeonDelveC"
+	COMPILER="gcc"
+	;;
+*)
+	echo "Invalid OS. Please specify 'win' or 'linux'."
+	exit 1
+	;;
 esac
-
 
 rm -f $OUTPUT || echo "Error removing $OUTPUT, but it's okay."
 
-
-$COMPILER -I$INCLUDE_DIR -L$LIBRARY_DIR -o $OUTPUT ${SOURCES[@]} $FLAGS
+$COMPILER -I$INCLUDE_DIR -L$LIBRARY_DIR -o $OUTPUT ${SOURCES[@]} $FLAGS $GCC_FLAGS
 
 echo "Compilation successful."
 
 if [ "$INSTALL" == "install" ]; then
 
-    echo "Installing..."
-    
-    rm -rf ../build 2&>/dev/null
-    mkdir ../build
+	echo "Installing..."
 
-    if [ "$OS" == "win" ]; then
-        cp $LIBRARY_DIR/raylib.dll ../build
-    fi
+	rm -rf ../build 2 &>/dev/null
+	mkdir ../build
 
-    cp -r res/ ../build
+	if [ "$OS" == "win" ]; then
+		cp $LIBRARY_DIR/raylib.dll ../build
+	fi
 
-    cp $OUTPUT ../build
+	cp -r res/ ../build
 
-    ### Clean up not used files
+	cp $OUTPUT ../build
 
-    rm -f $OUTPUT
-    rm -rf ../build/res/readme
+	### Clean up not used files
 
-    echo "Installed successfully for $OS."
-    echo "Build created at" && cd ../build && pwd
+	rm -f $OUTPUT
+	rm -rf ../build/res/readme
+
+	echo "Installed successfully for $OS."
+	echo "Build created at" && cd ../build && pwd
 
 fi
 
 if [ "$ZIP" == "zip" ]; then
-    echo "Zipping..."
-    zip -r ../build.zip ../build
-    echo "Zipped successfully."
+	echo "Zipping..."
+	zip -r ../build.zip ../build
+	echo "Zipped successfully."
 fi
 
 if [[ "$OS" == "linux" && "$INSTALL" == "install" ]]; then # This is just to easy the testing process
-    echo "Running..."
-    ../build/DungeonDelveC 
+	echo "Running..."
+	../build/DungeonDelveC
 fi
-

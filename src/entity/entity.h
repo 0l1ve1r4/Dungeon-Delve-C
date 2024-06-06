@@ -28,7 +28,7 @@ char* texture_path, int texture_width, int texture_height, char* damage_sound_pa
 void isEntityAlive(Entity* entity);
 void DrawEntityHealthBar(Entity entity_type, int entity_health, int entity_max_health);
 void UpdateEntityPosition(Entity *entity, float deltaX, float deltaY);
-void UpdateEntityFrameRec(Entity *entity, int currentFrame_x, int currentFrame_y, int spriteSheetWidth, int spriteSheetHeight);
+void UpdateEntityFrameRec(Entity *entity, unsigned int currentFrame_x, unsigned int currentFrame_y, int spriteSheetWidth, int spriteSheetHeight);
 void DrawEntity(Entity entity, int entity_size, int entity_origin_x, int entity_origin_y, int base_health);
 
 

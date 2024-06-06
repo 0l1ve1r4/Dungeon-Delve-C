@@ -31,12 +31,12 @@
 #define ENEMY_SPRITESHEET_HEIGHT 1
 
 Enemy* InitEnemy(int spawn_x, int spawn_y);
-void UpdateEnemiesMap(MapNode *TileMap, float deltaTime, int currentFrame, Player* player) ;
-void UpdateEnemy(Enemy *enemy, Player* player, float deltaTime, int currentFrame);
+void UpdateEnemiesMap(MapNode *TileMap, float deltaTime, unsigned int currentFrame, Player* player) ;
+void UpdateEnemy(Enemy *enemy, Player* player, float deltaTime, unsigned int currentFrame);
 void throwEnemyBack(Enemy *enemy, float deltaTime, int directionX, int directionY);
 bool isCollision(Enemy *enemy, Player* player);
 void handleCollision(Enemy *enemy, Player* player, float deltaTime, int directionX, int directionY);
-void isMoving(Enemy *enemy, Player* player, float deltaTime, int currentFrame);
+void isMoving(Enemy *enemy, Player* player, float deltaTime);
 void DrawEnemyMap(MapNode *TileMap) ;
 void DrawEnemy(Enemy *enemy);
 void UpdateFrameRec(Enemy *enemy, int currentFrame) ;

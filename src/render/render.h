@@ -25,8 +25,8 @@
 
 typedef enum {
 
-    BLOCKED = 0x00,
-    UNBLOCKED = 0x01,
+    COLLISION = 0x00,
+    NO_COLLISION = 0x01,
     STAIR = 0x02,
     HOLE = 0x03,
 
