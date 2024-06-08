@@ -34,7 +34,6 @@ typedef enum {
 
 
 void RenderMap(MapNode* nodes, Camera2D camera);
-int UpdateMapCollision(Player *player, MapNode *map);
 
 // CAMERA RELATED - FUNCTIONS //
 Camera2D InitPlayerCamera(Player *player);

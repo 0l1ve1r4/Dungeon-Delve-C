@@ -18,7 +18,7 @@ SOURCES=( # Source files
 #  By enabling -flto flag, perform optimizations across object files,
 #  including removing unused functions.
 FLAGS="-flto -lraylib -lm" # raylib library
-GCC_FLAGS="-pedantic-errors -Wall -Wextra -Wsign-conversion"
+GCC_FLAGS="-pedantic-errors -Wall -Wextra -Wsign-conversion -std=gnu99"
 INCLUDE_DIR="/usr/local/include" # raylib headers
 
 case "$OS" in
@@ -39,6 +39,15 @@ case "$OS" in
 	exit 1
 	;;
 esac
+
+while test $# -gt 0
+do
+    case "$1" in
+        debug) GCC_FLAGS="$GCC_FLAGS -g3 -D DEBUG"
+            ;;
+    esac
+    shift
+done
 
 rm -f $OUTPUT || echo "Error removing $OUTPUT, but it's okay."
 

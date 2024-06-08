@@ -19,8 +19,6 @@
 #include "menu.h"
 
 #include "entity/player.h"
-#include "entity/enemy.h"
-#include "map/maps.h"
 #include "render/render.h"
 #include "utils/utils.h"
 #include "events/events.h"
@@ -64,11 +62,15 @@ int main(void)
         UpdateMusicStream(backgroundMusic);
 
         GameVar->update(GameVar); 
-        Player->update(Player, GameVar->delta_time, GameVar->current_frame);
+        static uint8_t *PlayerCollisionType;
+        PlayerCollisionType = Player->update(Player, GameVar->delta_time, GameVar->current_frame, TileMap);
         Player->updateCamera(&Camera, Player, GameVar->delta_time);
         TileMap->updateEnemies(TileMap, GameVar->delta_time, GameVar->current_frame, Player);
         
-        HandlePlayerCollision(Player, TileMap->updateCollisions(Player, TileMap), MapInfo, TileMap);
+        if(*PlayerCollisionType == STAIR || *PlayerCollisionType == HOLE) {
+            StartPlayerOnNewMap(Player, *PlayerCollisionType, MapInfo, TileMap);
+            *PlayerCollisionType = NO_COLLISION;
+        }
         
         // Verify if the player wants to pause the game
         switch (PauseEvent()) {

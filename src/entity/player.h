@@ -50,12 +50,13 @@
 
 Player* InitPlayer(MapNode *Map);
 
-void isPlayerMoving(Player *player, float deltaTime);
+void updatePlayerPositionIfMoving(Player *player, float deltaTime, MapNode *map);
 void isAttacking(Player *player);
 void updatePlayerPosition(Player *player, float deltaX, float deltaY, unsigned int animation);
+void FallBackPlayerToLastPlayerPostionInCaseOfWallCollisionAndUpdateLAST_COLLISION_TYPE(Player *player, MapNode *map);
 
 void DrawPlayer(Player *player);
-void UpdatePlayer(Player *player, float deltaTime, unsigned int currentFrame);
+uint8_t *UpdatePlayer(Player *player, float deltaTime, unsigned int currentFrame, MapNode *map);
 void UpdateEnemyFrameRec(Player *player, int currentFrame);
 void PlayIdleAnimation(Player *player, unsigned int currentFrame);
 
