@@ -1,0 +1,6 @@
+-pedantic-errors
+-Wall
+-Wextra
+-Wsign-conversion
+-I/usr/local/include
+-std=gnu99

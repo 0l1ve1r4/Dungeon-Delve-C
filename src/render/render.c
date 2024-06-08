@@ -15,7 +15,6 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "render.h"
-#include "../map/maps.h"
 
 void RenderMap(MapNode* nodes, Camera2D camera){
     
@@ -38,50 +37,10 @@ void RenderMap(MapNode* nodes, Camera2D camera){
             
             int id = nodes->matrix[i][j];
             DrawTextureEx(nodes->textures[id], nodes->positions[i][j], 0, 1, WHITE);
-            
 
-
+            #ifdef DEBUG
+            DrawRectangleLines(nodes->positions[i][j].x, nodes->positions[i][j].y, nodes->textures[id].width, nodes->textures[id].height, RED);
+            #endif /* ifndef DEBUG */
         }
     }
 }
-
-int UpdateMapCollision(Player *player, MapNode *map){
-
-    Rectangle player_rect = (Rectangle){player->entity.position.x, player->entity.position.y, 8, 10};
-
-    for (int X = 0; X < map->matrix_height; X++){
-        for (int Y = 0; Y < map->matrix_width; Y++){
-
-            if (map->tile_info[X][Y].blocking == false) continue;
-    
-
-            else if (CheckCollisionRecs(player_rect, map->tile_info[X][Y].rect)){             
-                player->entity.position = player->entity.last_position;
-
-                char* debug = malloc(sizeof(char) * 100);
-                sprintf(debug, "Collision detected at %d, %d with %d block_type\n", X, Y, map->matrix[X][Y]);
-
-
-                debug_log(debug, "debug");
-
-
-                if (map->tile_info[X][Y].isStair){
-                    return STAIR;
-                }
-
-                else if (map->tile_info[X][Y].isHole){
-                    return HOLE;
-                }
-
-                else return COLLISION;
-            
-            }
-        }
-    }
-
-    return NO_COLLISION;
-}
-
-
-
-

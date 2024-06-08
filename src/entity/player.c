@@ -56,28 +56,65 @@ Player* InitPlayer(MapNode *Map){
     return player;
 }
 
+#define TOP_LEFT_VERTEX 0
+#define TOP_RIGHT_VERTEX 1
+#define BOTTOM_LEFT_VERTEX 2
+#define BOTTOM_RIGHT_VERTEX 3
+uint8_t LAST_COLLISION_TYPE = 0;
+void FallBackPlayerToLastPlayerPostionInCaseOfWallCollisionAndUpdateLAST_COLLISION_TYPE(Player *player, MapNode *map) {
+    static uint8_t checking = TOP_LEFT_VERTEX;
+    static bool hasCollided = false;
+    for(uint8_t i=0; i<4; i++) {
+        static uint32_t vertexX, vertexY;
+        switch (checking) {
+            case TOP_LEFT_VERTEX:
+                vertexX = player->entity.position.x/16;
+                vertexY = player->entity.position.y/16;
+                checking = TOP_RIGHT_VERTEX;
+                break;
+            case TOP_RIGHT_VERTEX:
+                vertexX = (player->entity.position.x+8)/16;
+                vertexY = player->entity.position.y/16;
+                checking = BOTTOM_LEFT_VERTEX;
+                break;
+            case BOTTOM_LEFT_VERTEX:
+                vertexX = player->entity.position.x/16;
+                vertexY = (player->entity.position.y+10)/16;
+                checking = BOTTOM_RIGHT_VERTEX;
+                break;
+            case BOTTOM_RIGHT_VERTEX:
+                vertexX = (player->entity.position.x+8)/16;
+                vertexY = (player->entity.position.y+10)/16;
+                break;
+        }
+        if(map->tile_info[vertexY][vertexX].blocking == true && CheckCollisionRecs((Rectangle){player->entity.position.x, player->entity.position.y, 8, 10}, map->tile_info[vertexY][vertexX].rect)) {
+            player->entity.position = player->entity.last_position;
+            if (map->tile_info[vertexY][vertexX].isStair) LAST_COLLISION_TYPE = STAIR;
+            if (map->tile_info[vertexY][vertexX].isHole)  LAST_COLLISION_TYPE = HOLE;
+            hasCollided = true;
+        }
+    }
+    if(!hasCollided) player->entity.last_position = player->entity.position;
 
-void UpdatePlayer(Player *player, float deltaTime, unsigned int currentFrame) {
+    //if arrived here, these values should be reseted
+    hasCollided = false;
+    checking = TOP_LEFT_VERTEX;
+}
+
+uint8_t *UpdatePlayer(Player *player, float deltaTime, unsigned int currentFrame, MapNode *map) {
     player->entity.last_position = player->entity.position;                    // Verify if player is attacking
 
     if (player->entity.isAttacking){         // If player is attacking, no need to check 
         player->entity.isMoving = false;     // if player is moving, already set to false
-
-    }
-
-    else{
+    } else {
         isAttacking(player);
-        if (!player->entity.isAttacking)
-            isPlayerMoving(player, deltaTime);
+        if (!player->entity.isAttacking) updatePlayerPositionIfMoving(player, deltaTime, map);
     }
 
-    if (!player->entity.isMoving && !player->entity.isAttacking) 
+    if (!player->entity.isMoving && !player->entity.isAttacking) {
         PlayIdleAnimation(player, currentFrame);
-
-    // if (player->entity.isMoving) or (player->entity.isAttacking) /
-    else {         
-        UpdateEntityFrameRec(&player->entity, currentFrame, player->last_animation, 
-        PLAYER_SPRITESHEET_WIDTH, PLAYER_SPRITESHEET_HEIGHT);
+    } else {         
+        UpdateEntityFrameRec(&player->entity, currentFrame, player->last_animation, PLAYER_SPRITESHEET_WIDTH, PLAYER_SPRITESHEET_HEIGHT);
         player->last_animation = player->last_animation;
 
 
@@ -88,9 +125,9 @@ void UpdatePlayer(Player *player, float deltaTime, unsigned int currentFrame) {
             player->entity.isAttacking = false;  
             frame_counter = 0;
         }
-    
-    }
 
+    }
+    return &LAST_COLLISION_TYPE;
 }
 
 void updatePlayerPosition(Player *player, float deltaX, float deltaY, unsigned int animation) {
@@ -98,7 +135,7 @@ void updatePlayerPosition(Player *player, float deltaX, float deltaY, unsigned i
     player->last_animation = animation;
 }
 
-void isPlayerMoving(Player *player, float deltaTime) {
+void updatePlayerPositionIfMoving(Player *player, float deltaTime, MapNode *map) {
     player->entity.isMoving = false;
 
     float player_speed = player->entity.speed * deltaTime;
@@ -115,9 +152,13 @@ void isPlayerMoving(Player *player, float deltaTime) {
     player->entity.texture.width < 0 && RIGHT ? player->entity.texture.width *= -1 : 0;
     
     if (LEFT) updatePlayerPosition(player, -player_speed, 0, SIDE_WALK_ANIMATION);
+    FallBackPlayerToLastPlayerPostionInCaseOfWallCollisionAndUpdateLAST_COLLISION_TYPE(player, map);
     if (RIGHT) updatePlayerPosition(player, player_speed, 0, SIDE_WALK_ANIMATION);
+    FallBackPlayerToLastPlayerPostionInCaseOfWallCollisionAndUpdateLAST_COLLISION_TYPE(player, map);
     if (UP) updatePlayerPosition(player, 0, -player_speed, BACK_WALK_ANIMATION);
+    FallBackPlayerToLastPlayerPostionInCaseOfWallCollisionAndUpdateLAST_COLLISION_TYPE(player, map);
     if (DOWN) updatePlayerPosition(player, 0, player_speed, FRONT_WALK_ANIMATION);
+    FallBackPlayerToLastPlayerPostionInCaseOfWallCollisionAndUpdateLAST_COLLISION_TYPE(player, map);
     PlaySound(player->walk_sounds[rand() % 3]);
 }
 
@@ -156,6 +197,9 @@ void isAttacking(Player *player) {
 
 void DrawPlayer(Player *player) { 
     DrawEntity(player->entity, PLAYER_SIZE, 8, 18, PLAYER_BASE_HEALTH);
+    #ifdef DEBUG
+    DrawRectangleLines(player->entity.position.x, player->entity.position.y, 8, 10, GREEN);
+    #endif /* ifndef DEBUG */
 }
 
 void PlayIdleAnimation(Player *player, unsigned int currentFrame) {

@@ -24,7 +24,7 @@
 int PauseEvent(void);
 void LoadingWindow(void);
 
-void HandlePlayerCollision(Player* player, int collisionType, MenuData* MapInfo,  MapNode* TileMap);
+void StartPlayerOnNewMap(Player* player, int collisionType, MenuData* MapInfo,  MapNode* TileMap);
 void handleOptionSelection(MenuData* menuData, MenuSounds* menuSounds);
 void handleWorldSettings(MenuData* menuData, MenuSounds* menuSounds);
 void handleDifficultySettings(MenuData* menuData, MenuSounds* menuSounds);

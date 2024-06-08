@@ -85,20 +85,19 @@ void LoadingWindow(void) {
     }
 }
 
-void HandlePlayerCollision(Player* player, int collisionType, MenuData* MapInfo, MapNode* TileMap){
-    if (collisionType == STAIR || collisionType == HOLE) {
-            player->entity.position = player->entity.spawn_point; // Avoid collision with the new map
+void StartPlayerOnNewMap(Player* player, int collisionType, MenuData* MapInfo, MapNode* TileMap){
+    player->entity.position = player->entity.spawn_point; // Avoid collision with the new map
 
-            GenerateMap(TileMap);
-            LoadingWindow();
-            if (collisionType == STAIR) {
-                MapInfo->map_level++;
-            } else if (collisionType == HOLE) {
-                MapInfo->map_level = MapInfo->map_level == 0 ? 2 : MapInfo->map_level << 1;
-            }
-
-        
-        }
+    GenerateMap(TileMap);
+    LoadingWindow();
+    switch (collisionType) {
+        case STAIR:
+            MapInfo->map_level++;
+            break;
+        case HOLE:
+            MapInfo->map_level = MapInfo->map_level == 0 ? 2 : MapInfo->map_level << 1;
+            break;
+    }
 }
 
 

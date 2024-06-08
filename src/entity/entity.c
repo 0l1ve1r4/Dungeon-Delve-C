@@ -88,7 +88,7 @@ void DrawEntity(Entity entity, int entity_size, int entity_origin_x, int entity_
     DrawEntityHealthBar(entity, entity.health, base_health);
     DrawTexturePro(entity.texture, entity.frameRec, entityRec, entityOrigin, 0, WHITE);
 
-    // Debug only
-    //DrawRectangleLines(entityRec.x, entityRec.y, entity_size/2, entity_size/2, RED);
-
+    #ifdef DEBUG
+    DrawRectangleLines(entityRec.x, entityRec.y, entity_size/2, entity_size/2, RED);
+    #endif /* ifndef DEBUG */
 }

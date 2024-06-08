@@ -15,7 +15,6 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "menu.h"
-#include "entity/player.h"
 #include "entity/enemy.h"
 
 static MenuData* menuData;
@@ -110,7 +109,7 @@ void InitSounds(void){
     SetMusicVolume(menuSounds->backgroundMusic, 0.5f);
 }
 
-void UpdateRaining(){
+void UpdateRaining(void){
     if (menuData->RainingAlpha > 0.0f && menuData->isRaining) {
         menuData->RainingAlpha -= 0.1f;
         return;
@@ -216,7 +215,6 @@ void startSinglePlayer(void){
     InitRandomSeed((void*)(uintptr_t)menuData->MapSeed);
     menuData->TileMapGraph = InitMap(menuData->MapSize);
     menuData->TileMapGraph->updateEnemies = &UpdateEnemiesMap;
-    menuData->TileMapGraph->updateCollisions = &UpdateMapCollision;
     menuData->TileMapGraph->drawEnemies = &DrawEnemyMap;
     menuData->TileMapGraph->drawMap = &RenderMap;
 }

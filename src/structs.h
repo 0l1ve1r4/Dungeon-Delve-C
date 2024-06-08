@@ -67,7 +67,7 @@ struct Player {
     unsigned int last_animation;     // Last animation of the player
     int current_animation;  // Current animation of the player
 
-    void (*update)(Player*, float, unsigned int);  // Function pointer to update the player
+    uint8_t *(*update)(Player*, float, unsigned int, MapNode *map);  // Function pointer to update the player
     void (*updateCamera)(Camera2D*, Player*, float);
     void (*draw)(Player*);                // Function pointer to draw the player
 
@@ -92,7 +92,6 @@ struct MapNode{
     int num_enemies;        // Number of enemies in the map
     Enemy** enemies;         // Array of enemies in the map
 
-    int (*updateCollisions)(Player*, MapNode*);          // Function pointer to update the collisions in the map
     void (*updateEnemies)(MapNode*, float, unsigned int, Player*); // Function pointer to update the enemies in the map
     void (*drawEnemies)(MapNode*);                        // Function pointer to draw the enemies in the map
     void (*drawMap)(MapNode*, Camera2D);                            // Function pointer to draw the map
