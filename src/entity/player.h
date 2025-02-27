@@ -1,5 +1,5 @@
 // This file is part of DungeonDelveC.
-// Copyright (C) 2024 Guilherme Oliveira Santos
+// Copyright (C) 2024 - 2025 Guilherme Oliveira Santos
 
 // DungeonDelveC is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -20,8 +20,8 @@
 #include "entity.h"
 //
 #define PLAYER_BASE_HEALTH 5
-#define PLAYER_BASE_STAMINA 3
-#define PLAYER_BASE_MANA 3
+#define PLAYER_BASE_STAMINA 5
+#define PLAYER_BASE_MANA 5
 #define PLAYER_BASE_DAMAGE 1
 //
 #define PLAYER_SPRITESHEET "res/characters/player.png"

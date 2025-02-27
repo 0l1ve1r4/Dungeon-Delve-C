@@ -1,5 +1,5 @@
 // This file is part of DungeonDelveC.
-// Copyright (C) 2024 Guilherme Oliveira Santos
+// Copyright (C) 2024 - 2025 Guilherme Oliveira Santos
 
 // DungeonDelveC is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -52,7 +52,8 @@ struct Entity{
     float speed;
     bool isAlive;
     bool isAttacking;
-    bool isMoving;  
+    bool isMoving;
+    bool isPlayer;  
 };
 
 struct Enemy {

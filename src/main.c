@@ -1,5 +1,5 @@
 // This file is part of DungeonDelveC.
-// Copyright (C) 2024 Guilherme Oliveira Santos
+// Copyright (C) 2024 - 2025 Guilherme Oliveira Santos
 
 // DungeonDelveC is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -87,15 +87,15 @@ int main(void)
             
             BeginMode2D(Camera);
                 
-                TileMap->drawMap(TileMap, Camera);  // function pointer
-                TileMap->drawEnemies(TileMap);      // function pointer
-                Player->draw(Player);               // function pointer
-                DrawFog(Camera, FOG_RADIUS);        // static function
+                TileMap->drawMap(TileMap, Camera);  
+                TileMap->drawEnemies(TileMap);      
+                Player->draw(Player);               
+                DrawFog(Camera, FOG_RADIUS);        // TODO: Verify fog on large windows
 
             EndMode2D();
 
-            ShowControls();                         // static function
-            GetGameInfo(Player, MapInfo);           // static function
+            ShowControls();                         
+            //GetGameInfo(Player, MapInfo);         // DEPRECATE: color bars
         EndDrawing();
         //
         //================================================================================

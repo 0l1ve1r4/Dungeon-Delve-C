@@ -1,5 +1,5 @@
 // This file is part of DungeonDelveC.
-// Copyright (C) 2024 Guilherme Oliveira Santos
+// Copyright (C) 2024 - 2025 Guilherme Oliveira Santos
 
 // DungeonDelveC is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -54,16 +54,67 @@ void DrawEntityHealthBar(Entity entity_type, int entity_health, int entity_max_h
     unsigned int HealBar_Y = entity_type.position.y - 10;
     unsigned int HealthBar_X = entity_type.position.x - (entity_max_health/3);
 
-    unsigned int HealthBarHeight = HEALTH_BAR_HEIGHT;
-    unsigned int HealthBarWidth = entity_max_health * __TILE_SIZE / entity_max_health;
+    unsigned int barHeight = HEALTH_BAR_HEIGHT;
+    unsigned int barWidth = entity_max_health * __TILE_SIZE / entity_max_health;
     
     int CurrentHealthBarWidth = entity_health * __TILE_SIZE / entity_max_health;
 
-    Rectangle healthBar = (Rectangle){HealthBar_X, HealBar_Y, HealthBarWidth, HealthBarHeight};
-    Rectangle fullHealthBar = (Rectangle){HealthBar_X, HealBar_Y, CurrentHealthBarWidth, HealthBarHeight};
+    Rectangle healthBar = (Rectangle){HealthBar_X, HealBar_Y, barWidth, barHeight};
+    Rectangle fullHealthBar = (Rectangle){HealthBar_X, HealBar_Y, CurrentHealthBarWidth, barHeight};
 
     DrawRectangleRec(healthBar, BLACK);
     DrawRectangleRec(fullHealthBar, GREEN);
+
+    if (entity_type.isPlayer){
+        unsigned int staminaBar_Y = HealBar_Y - 5;        
+        int CurrentHealthBarWidth = entity_health * __TILE_SIZE / entity_max_health;
+
+        Rectangle staminaBar = (Rectangle){HealthBar_X, staminaBar_Y, barWidth, barHeight};
+        Rectangle fullstaminaBar = (Rectangle){HealthBar_X, staminaBar_Y, CurrentHealthBarWidth, barHeight};
+
+        DrawRectangleRec(staminaBar, BLACK);
+        DrawRectangleRec(fullstaminaBar, YELLOW);      
+    }
+
+}
+
+void DrawPlayerBars(Entity entity_type, int entity_health, int entity_max_health){
+    unsigned int HealBar_Y = entity_type.position.y - 10;
+    unsigned int HealthBar_X = entity_type.position.x - (entity_max_health/3);
+
+    unsigned int barHeight = HEALTH_BAR_HEIGHT;
+    unsigned int barWidth = entity_max_health * __TILE_SIZE / entity_max_health;
+    
+    int CurrentHealthBarWidth = entity_health * __TILE_SIZE / entity_max_health;
+
+    Rectangle healthBar = (Rectangle){HealthBar_X, HealBar_Y, barWidth, barHeight};
+    Rectangle fullHealthBar = (Rectangle){HealthBar_X, HealBar_Y, CurrentHealthBarWidth, barHeight};
+
+    DrawRectangleRec(healthBar, BLACK);
+    DrawRectangleRec(fullHealthBar, GREEN);
+
+    if (entity_type.isPlayer){
+        unsigned int staminaBar_Y = HealBar_Y - 6.0;        
+        int CurrentHealthBarWidth = entity_type.stamina * __TILE_SIZE / entity_max_health;
+
+        Rectangle staminaBar = (Rectangle){HealthBar_X, staminaBar_Y, barWidth, barHeight};
+        Rectangle fullstaminaBar = (Rectangle){HealthBar_X, staminaBar_Y, CurrentHealthBarWidth, barHeight};
+
+        DrawRectangleRec(staminaBar, BLACK);
+        DrawRectangleRec(fullstaminaBar, YELLOW);      
+    }
+
+    if (entity_type.isPlayer){
+        unsigned int staminaBar_Y = HealBar_Y - 2.5;        
+        int CurrentHealthBarWidth = entity_type.mana * __TILE_SIZE / entity_max_health;
+
+        Rectangle staminaBar = (Rectangle){HealthBar_X, staminaBar_Y, barWidth, barHeight};
+        Rectangle fullstaminaBar = (Rectangle){HealthBar_X, staminaBar_Y, CurrentHealthBarWidth, barHeight};
+
+        DrawRectangleRec(staminaBar, BLACK);
+        DrawRectangleRec(fullstaminaBar, BLUE);      
+    }
+
 }
 
 void UpdateEntityPosition(Entity *entity, float deltaX, float deltaY){
@@ -85,7 +136,15 @@ void DrawEntity(Entity entity, int entity_size, int entity_origin_x, int entity_
     Rectangle entityRec = (Rectangle){entity.position.x, entity.position.y, entity_size, entity_size};
     Vector2 entityOrigin = (Vector2){entity_origin_x, entity_origin_y};
 
-    DrawEntityHealthBar(entity, entity.health, base_health);
+    if (entity.isPlayer) {
+        DrawPlayerBars(entity, entity.health, base_health);
+    }
+
+    else {
+        DrawEntityHealthBar(entity, entity.health, base_health);
+    }
+    
+    
     DrawTexturePro(entity.texture, entity.frameRec, entityRec, entityOrigin, 0, WHITE);
 
     #ifdef DEBUG

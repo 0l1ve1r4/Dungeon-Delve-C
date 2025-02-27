@@ -1,5 +1,5 @@
 // This file is part of DungeonDelveC.
-// Copyright (C) 2024 Guilherme Oliveira Santos
+// Copyright (C) 2024 - 2025 Guilherme Oliveira Santos
 
 // DungeonDelveC is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -42,6 +42,8 @@ Player* InitPlayer(MapNode *Map){
     "res/sounds/global/death.wav"
     
     );
+
+    player->entity.isPlayer = true;
 
     player->walk_sounds = (Sound*)malloc(sizeof(Sound) * COUNT_WALK_SOUNDS);
     for (int i = 0; i < COUNT_WALK_SOUNDS; i++) player->walk_sounds[i] = LoadSound(PlayerSoundPaths[i]);
